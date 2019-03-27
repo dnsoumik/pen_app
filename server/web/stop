@@ -1,0 +1,12 @@
+
+# Remove all the compiled files
+rm ./*.pyc
+rm ../*.pyc
+rm ../utils/*.pyc
+rm ./socket/*.pyc
+
+PID_HOME="/tmp/proxy/sample/web"
+
+# Kill the PIDs
+echo `cat $PID_HOME/sample_web_server.pid`
+pkill -e -F $PID_HOME/sample_web_server.pid

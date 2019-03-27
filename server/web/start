@@ -1,0 +1,11 @@
+#WEB SERVER
+
+ulimit -n 10000
+
+PID_HOME="/tmp/proxy/sample/web"
+LOG_HOME="./log"
+
+mkdir -p $LOG_HOME
+mkdir -p $PID_HOME
+
+PYTHONPATH=`pwd`:`pwd`/lib twistd --pidfile=$PID_HOME/sample_web_server.pid --logfile=$LOG_HOME/web.log -y ./sample_web_server.py &  
