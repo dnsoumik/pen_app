@@ -1,0 +1,5 @@
+{
+    "server": "DEV",
+    "url": "https://dev.xlayer.in",
+    "uploads_path": "./../../uploads/"
+}

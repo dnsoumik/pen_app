@@ -14,13 +14,36 @@ class FileUploadHandler(cyclone.web.RequestHandler):
         code = 2000
         message = ''
         result = []
-        resp =  {
-                    'status': status,
-                    'code': code,
-                    'message': message,
-                    'result': result
-                }
-        self.write(resp)
+        try:
+            # For Any Authorization
+            if True:
+                # * for list all files
+                files = yield os.listdir(self.fu.uploads_path)
+                if len(files):
+                    result = files
+                    status = True
+                else:
+                    status = False
+                    message = 'No Files Found'
+                    code = 4003
+            else:
+                status = False
+                message = 'You are not Authorized'
+                code = 4003
+        except Exception, e:
+            Log.r('EXC', e)
+            status = False
+            message = 'Logical ERROR'
+            code = 5010
+        self.write(
+                    {
+                        'status': status,
+                        'code': code,
+                        'message': message,
+                        'result': result
+                    }
+                )
+        self.finish()
         return
 
     @defer.inlineCallbacks
@@ -71,11 +94,25 @@ class FileUploadHandler(cyclone.web.RequestHandler):
                     self.finish()
                     return
                 if status:
-                    # Creating File Path
-                    print 'test'
+                    try:
+                        # Creating File Path
+                        if not (os.path.exists(self.fu.uploads_path)):
+                            os.system('mkdir ' + self.fu.uploads_path)
+                        f_path = self.fu.uploads_path + f_name
+                        fm = open(f_path, 'w')
+                        fm.write(f_raw)
+                        fm.close()
+                        message = 'File Has been saved '
+                        result.append(f_name)
+                        code = 2000
+                    except Exception, e:
+                        Log.r('EXC', e)
+                        status = False
+                        message = 'ERROR when saving File'
+                        code = 5040
                 else:
                     status = False
-                    message = 'Validation Error'
+                    message = 'Validation ERROR'
                     code = 5030
             else:
                 status = False
@@ -84,7 +121,7 @@ class FileUploadHandler(cyclone.web.RequestHandler):
         except Exception, e:
             Log.r('EXC', e)
             status = False
-            message = 'Logical Error'
+            message = 'Logical EROOR'
             code = 5010
         self.write(
                         {
