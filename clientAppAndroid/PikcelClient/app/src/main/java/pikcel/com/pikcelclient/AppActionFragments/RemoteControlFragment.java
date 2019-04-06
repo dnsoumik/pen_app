@@ -146,11 +146,11 @@ public class RemoteControlFragment extends Fragment {
                     if(playState){
                         remoteClient.send(socketUtil.createMessage("PAUSE"));
                         playState = false;
-                        play.setImageResource(R.mipmap.ic_play);
+                        play.setImageResource(R.drawable.ic_play_arrow);
                     }else{
                         remoteClient.send(socketUtil.createMessage("PLAY"));
                         playState = true;
-                        play.setImageResource(R.mipmap.ic_pause);
+                        play.setImageResource(R.drawable.ic_pause);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

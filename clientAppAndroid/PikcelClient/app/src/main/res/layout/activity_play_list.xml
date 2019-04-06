@@ -5,7 +5,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".AppActionFragments.PlayList"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@drawable/background_gradient">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="10"
+        android:layout_marginBottom="10sp">
+
+        <ImageButton
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_arrow"
+            android:background="@android:color/transparent"
+            android:layout_weight="8"
+            android:layout_gravity="center_vertical"
+            android:id="@+id/btn_back_playlist"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose file to play"
+            android:textColor="#ffffff"
+            android:layout_margin="10dp"
+            android:textSize="20dp"
+            android:layout_weight="3"/>
+
+    </LinearLayout>
 
     <ScrollView
         android:layout_width="match_parent"

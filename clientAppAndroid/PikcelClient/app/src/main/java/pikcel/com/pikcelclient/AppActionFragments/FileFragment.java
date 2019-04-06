@@ -22,17 +22,23 @@ import android.support.annotation.Nullable;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.FloatingActionButton;
 
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -44,12 +50,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import pikcel.com.pikcelclient.BuildConfig;
 import pikcel.com.pikcelclient.FontManager;
 import pikcel.com.pikcelclient.R;
 import pikcel.com.pikcelclient.RealPathUtil;
+import pikcel.com.pikcelclient.SocketIOUtil;
 
 import static android.content.ContentValues.TAG;
 
@@ -64,6 +73,9 @@ public class FileFragment extends Fragment {
     Uri uploadFileUri;
     ProgressDialog progressDialog = null;
     FontManager fontManager;
+    WebSocketClient remoteClient;
+    Boolean playState = false;
+    SocketIOUtil socketUtil = new SocketIOUtil();
 
     @Nullable
     @Override
@@ -72,8 +84,16 @@ public class FileFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         parentHolder = inflater.inflate(R.layout.file_fragment_layout, container, false);
-
         fontManager = new FontManager(getActivity());
+
+        LinearLayout fileSelectionMini = parentHolder.findViewById(R.id.file_selection_mini);
+        fileSelectionMini.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent playListActivity = new Intent(getActivity(), PlayList.class);
+                startActivity(playListActivity);
+            }
+        });
 
         /**
          * In the following part we are parsing the root layout of the FileFragment and
@@ -84,6 +104,79 @@ public class FileFragment extends Fragment {
         /**
          * End of comment
          * */
+
+        /**
+         * Connecting to Web Socket
+         * */
+
+        URI uri;
+        try{
+            uri = new URI("wss://dev.trakiga.com/sample/api/rt_socket");
+        }catch (URISyntaxException e){
+            e.printStackTrace();
+            return null;
+        }
+
+
+        Map<String, String> headers = new ArrayMap<>();
+        headers.put("Origin", BuildConfig.APPLICATION_ID);
+
+
+        remoteClient = new WebSocketClient(uri, headers) {
+            @Override
+            public void onOpen(ServerHandshake handshakedata) {
+                Log.d("SOCKET", "CONNECTED");
+            }
+
+            @Override
+            public void onMessage(String message) {
+
+                Log.d("SOCKET", message);
+                try {
+                    JSONObject response = new JSONObject(message);
+                    Log.d("SERVER-SAYS: ", response.getString("message"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onClose(int code, String reason, boolean remote) {
+                Log.d("SOCKET", "DISCONNECTED");
+            }
+
+            @Override
+            public void onError(Exception ex) {
+                ex.printStackTrace();
+            }
+        };
+
+        remoteClient.connect();
+
+        final ImageButton playerControllerMini = parentHolder.findViewById(R.id.control_button_mini);
+        playerControllerMini.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    if(playState){
+                        remoteClient.send(socketUtil.createMessage("PAUSE"));
+                        playState = false;
+                        playerControllerMini.setImageResource(R.drawable.ic_play_arrow);
+                    }else{
+                        remoteClient.send(socketUtil.createMessage("PLAY"));
+                        playState = true;
+                        playerControllerMini.setImageResource(R.drawable.ic_pause);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        /**
+         * Socket Connection Script complete
+         * */
+
 
         selectFileButton = parentHolder.findViewById(R.id.select_file_button);
         filePath = parentHolder.findViewById(R.id.file_path);
@@ -134,7 +227,7 @@ public class FileFragment extends Fragment {
                 String realPath;
                 // SDK < API11
                 if (Build.VERSION.SDK_INT < 11)
-                    realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(getContext(), resultData.getData());
+                    realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(getActivity(), resultData.getData());
 
                     // SDK >= 11 && SDK < 19
                 else if (Build.VERSION.SDK_INT < 19)

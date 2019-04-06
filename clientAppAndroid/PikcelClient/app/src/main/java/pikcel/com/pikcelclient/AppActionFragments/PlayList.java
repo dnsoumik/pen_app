@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -47,6 +48,14 @@ public class PlayList extends Activity {
 
         recyclerView = findViewById(R.id.play_list_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        ImageButton backButton = findViewById(R.id.btn_back_playlist);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
         StringRequest sr = new StringRequest(Request.Method.GET, "https://dev.trakiga.com/sample/api/files", new Response.Listener<String>() {
