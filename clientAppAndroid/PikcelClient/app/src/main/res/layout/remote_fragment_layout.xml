@@ -8,6 +8,7 @@
     android:background="@drawable/background_gradient"
     android:id="@+id/remote_fragment_root">
 
+
     <LinearLayout
         android:id="@+id/view_play"
         android:layout_width="match_parent"
@@ -36,6 +37,7 @@
             android:layout_height="50dp"
             android:layout_weight="3.33"
             android:src="@drawable/ic_previous"
+            android:srcCompat="@drawable/ic_previous"
             android:background="@android:color/transparent"
             android:tint="#ffff" />
 
@@ -45,6 +47,7 @@
             android:layout_height="50dp"
             android:layout_weight="3.33"
             android:src="@drawable/ic_play_arrow"
+            android:srcCompat="@drawable/ic_play_arrow"
             android:background="@android:color/transparent"
             android:tint="#ffff" />
 
@@ -54,6 +57,7 @@
             android:layout_height="50dp"
             android:layout_weight="3.33"
             android:src="@drawable/ic_next"
+            android:srcCompat="@drawable/ic_next"
             android:background="@android:color/transparent"
             android:tint="#ffff" />
 
