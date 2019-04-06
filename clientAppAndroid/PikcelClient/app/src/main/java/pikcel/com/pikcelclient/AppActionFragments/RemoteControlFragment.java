@@ -54,94 +54,94 @@ public class RemoteControlFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        URI uri;
-        try{
-            uri = new URI("wss://dev.trakiga.com/sample/api/rt_socket");
-        }catch (URISyntaxException e){
-            e.printStackTrace();
-            return null;
-        }
-
-
-        Map<String, String> headers = new ArrayMap<>();
-        headers.put("Origin", BuildConfig.APPLICATION_ID);
-
-
-        remoteClient = new WebSocketClient(uri, headers) {
-            @Override
-            public void onOpen(ServerHandshake handshakedata) {
-                Log.d("SOCKET", "CONNECTED");
-            }
-
-            @Override
-            public void onMessage(String message) {
-
-                Log.d("SOCKET", message);
-                try {
-                    JSONObject response = new JSONObject(message);
-                    Log.d("SERVER-SAYS: ", response.getString("message"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onClose(int code, String reason, boolean remote) {
-                Log.d("SOCKET", "DISCONNECTED");
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                ex.printStackTrace();
-            }
-        };
-
+//        URI uri;
+//        try{
+//            uri = new URI("wss://dev.trakiga.com/sample/api/rt_socket");
+//        }catch (URISyntaxException e){
+//            e.printStackTrace();
+//            return null;
+//        }
+//
+//
+//        Map<String, String> headers = new ArrayMap<>();
+//        headers.put("Origin", BuildConfig.APPLICATION_ID);
+//
+//
+//        remoteClient = new WebSocketClient(uri, headers) {
+//            @Override
+//            public void onOpen(ServerHandshake handshakedata) {
+//                Log.d("SOCKET", "CONNECTED");
+//            }
+//
+//            @Override
+//            public void onMessage(String message) {
+//
+//                Log.d("SOCKET", message);
+//                try {
+//                    JSONObject response = new JSONObject(message);
+//                    Log.d("SERVER-SAYS: ", response.getString("message"));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//
+//            @Override
+//            public void onClose(int code, String reason, boolean remote) {
+//                Log.d("SOCKET", "DISCONNECTED");
+//            }
+//
+//            @Override
+//            public void onError(Exception ex) {
+//                ex.printStackTrace();
+//            }
+//        };
+//
         parentHolder = inflater.inflate(R.layout.remote_fragment_layout, container, false);
-
-        remoteClient.connect();
-
-        previous = parentHolder.findViewById(R.id.btn_prev);
-        next = parentHolder.findViewById(R.id.btn_next);
-        play = parentHolder.findViewById(R.id.btn_play);
-        pause = parentHolder.findViewById(R.id.btn_pause);
-        playlistFab = parentHolder.findViewById(R.id.play_list);
-
-        playlistFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent playListActivity = new Intent(getActivity(), PlayList.class);
-                startActivity(playListActivity);
-            }
-        });
-
-        previous.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                remoteClient.send("play_previous");
-            }
-        });
-
-        next.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                remoteClient.send("play_next");
-            }
-        });
-
-        play.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                remoteClient.send("play");
-            }
-        });
-
-        pause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                remoteClient.send("pause");
-            }
-        });
-
+//
+//        remoteClient.connect();
+//
+//        previous = parentHolder.findViewById(R.id.btn_prev);
+//        next = parentHolder.findViewById(R.id.btn_next);
+//        play = parentHolder.findViewById(R.id.btn_play);
+//        pause = parentHolder.findViewById(R.id.btn_pause);
+//        playlistFab = parentHolder.findViewById(R.id.play_list);
+//
+//        playlistFab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent playListActivity = new Intent(getActivity(), PlayList.class);
+//                startActivity(playListActivity);
+//            }
+//        });
+//
+//        previous.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                remoteClient.send("play_previous");
+//            }
+//        });
+//
+//        next.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                remoteClient.send("play_next");
+//            }
+//        });
+//
+//        play.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                remoteClient.send("play");
+//            }
+//        });
+//
+//        pause.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                remoteClient.send("pause");
+//            }
+//        });
+//
         return parentHolder;
     }
 }
