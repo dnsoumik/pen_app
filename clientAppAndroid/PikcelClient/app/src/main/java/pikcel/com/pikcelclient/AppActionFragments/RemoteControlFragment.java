@@ -1,5 +1,6 @@
 package pikcel.com.pikcelclient.AppActionFragments;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -15,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.java_websocket.client.WebSocketClient;
@@ -28,6 +30,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +52,8 @@ public class RemoteControlFragment extends Fragment {
     FloatingActionButton playlistFab;
     SocketIOUtil socketUtil = new SocketIOUtil();
     Boolean playState = false;
+    TextView playingFileName;
+
 
 
     @Nullable
@@ -68,6 +73,7 @@ public class RemoteControlFragment extends Fragment {
 
         Map<String, String> headers = new ArrayMap<>();
         headers.put("Origin", BuildConfig.APPLICATION_ID);
+
 
 
         remoteClient = new WebSocketClient(uri, headers) {
@@ -107,12 +113,13 @@ public class RemoteControlFragment extends Fragment {
         next = parentHolder.findViewById(R.id.btn_next);
         play = parentHolder.findViewById(R.id.btn_play);
         playlistFab = parentHolder.findViewById(R.id.play_list);
+        playingFileName = (TextView) parentHolder.findViewById(R.id.active_file_name_remote);
 
         playlistFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent playListActivity = new Intent(getActivity(), PlayList.class);
-                startActivity(playListActivity);
+                startActivityForResult(playListActivity, FileFragment.FILENAME_SELECTION_CODE);
             }
         });
 
@@ -159,5 +166,23 @@ public class RemoteControlFragment extends Fragment {
         });
 
         return parentHolder;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+        super.onActivityResult(requestCode, resultCode, resultData);
+
+        if(requestCode == FileFragment.FILENAME_SELECTION_CODE){
+            try {
+                String[] resultArray = {resultData.getStringExtra("FILENAME")};
+                String message = socketUtil.createMessage("PLAY", true, 200, resultArray);
+                System.out.println(message);
+                remoteClient.send(message);
+                playingFileName.setText(resultData.getStringExtra("FILENAME"));
+            } catch (Exception e) {
+                Log.e("ERROR", "something went wrong");
+                e.printStackTrace();
+            }
+        }
     }
 }

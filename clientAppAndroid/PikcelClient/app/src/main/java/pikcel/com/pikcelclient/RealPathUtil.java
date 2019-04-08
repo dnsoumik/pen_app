@@ -18,7 +18,7 @@ public class RealPathUtil {
         // Split at colon, use second item in the array
         String id = wholeID.split(":")[1];
 
-        String[] column = { MediaStore.Images.Media.DATA };
+        String[] column = { MediaStore.Images.Media.DATA, MediaStore.Video.Media.DATA };
 
         // where id is equal to
         String sel = MediaStore.Images.Media._ID + "=?";

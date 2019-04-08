@@ -43,4 +43,7 @@ dependencies {
 
     //Circular Image view
     implementation 'de.hdodenhof:circleimageview:3.0.0'
+
+    implementation 'in.gauriinfotech:commons:1.0.8'
+
 }

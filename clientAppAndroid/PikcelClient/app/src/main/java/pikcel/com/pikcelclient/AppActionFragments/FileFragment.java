@@ -37,6 +37,7 @@ import android.widget.Toast;
 import org.apache.commons.io.FileUtils;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -49,11 +50,13 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import in.gauriinfotech.commons.Commons;
 import pikcel.com.pikcelclient.BuildConfig;
 import pikcel.com.pikcelclient.FontManager;
 import pikcel.com.pikcelclient.R;
@@ -66,8 +69,9 @@ public class FileFragment extends Fragment {
 
     View parentHolder;
     Button selectFileButton;
-    TextView filePath;
+    TextView filePath, playingFileName;
     private static final int READ_REQUEST_CODE = 42;
+    public static final int FILENAME_SELECTION_CODE = 1001;
     FloatingActionButton uploadFab;
     String uploadFilePath;
     Uri uploadFileUri;
@@ -85,13 +89,14 @@ public class FileFragment extends Fragment {
 
         parentHolder = inflater.inflate(R.layout.file_fragment_layout, container, false);
         fontManager = new FontManager(getActivity());
+        playingFileName = (TextView) parentHolder.findViewById(R.id.active_file_name);
 
         LinearLayout fileSelectionMini = parentHolder.findViewById(R.id.file_selection_mini);
         fileSelectionMini.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent playListActivity = new Intent(getActivity(), PlayList.class);
-                startActivity(playListActivity);
+                startActivityForResult(playListActivity, FILENAME_SELECTION_CODE);
             }
         });
 
@@ -219,42 +224,59 @@ public class FileFragment extends Fragment {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
+
         if (requestCode == READ_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             Uri uri = null;
             if (resultData != null) {
                 uri = resultData.getData();
                 dumpFileMetaData(uri);
                 String realPath;
-                // SDK < API11
-                if (Build.VERSION.SDK_INT < 11)
-                    realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(getActivity(), resultData.getData());
 
-                    // SDK >= 11 && SDK < 19
-                else if (Build.VERSION.SDK_INT < 19)
-                    realPath = RealPathUtil.getRealPathFromURI_API11to18(getActivity(), resultData.getData());
+//                // SDK < API11
+//                if (Build.VERSION.SDK_INT < 11) {
+//                    System.out.println("SDK < API 11");
+//                    realPath = Commons.getPath(resultData.getData(), getActivity());
+//
+//                    // SDK >= 11 && SDK < 19
+//                }else if (Build.VERSION.SDK_INT < 19) {
+//                    System.out.println("SDK > API 11 SDK < 19");
+//                    realPath = Commons.getPath(resultData.getData(), getActivity());
+//
+//
+//                    // SDK > 19 (Android 4.4)
+//                }else {
+//                    System.out.println("SDK > 19");
+////                    realPath = RealPathUtil.getRealPathFromURI_API19(getActivity(), resultData.getData());
+//                    System.out.println(resultData.getData());
+//                    realPath = Commons.getPath(resultData.getData(), getActivity());
+//                    System.out.println(realPath);
+//                }
 
-                    // SDK > 19 (Android 4.4)
-                else
-                    realPath = RealPathUtil.getRealPathFromURI_API19(getActivity(), resultData.getData());
+                realPath = Commons.getPath(resultData.getData(), getActivity());
 
-                Log.d("Real Path", realPath);
+                Log.d("RealPath", realPath);
                 Log.d("File Path", uri.getPath());
                 Log.d("File Encoded Path", uri.getEncodedPath());
-
-//                try {
-//                    File file = new File(realPath);
-//                    byte bytes[] = FileUtils.readFileToByteArray(file);
-//                    String a  = bytes.toString();
-//                    Log.d("BYTE Array", a);
-//                } catch (Exception e) {
-//                    e.printStackTrace();
-//                }
 
                 uploadFilePath = realPath;
                 uploadFileUri = uri;
                 uploadFab.setVisibility(View.VISIBLE);
                 HashMap<String, String> fileInfo = dumpFileMetaData(uploadFileUri);
                 filePath.setText(fileInfo.get("DisplayName") + " : " + fileInfo.get("Size"));
+            }
+        }
+
+        if(requestCode == FILENAME_SELECTION_CODE){
+
+            try {
+                String[] resultArray = {resultData.getStringExtra("FILENAME")};
+                String message = socketUtil.createMessage("PLAY", true, 200, resultArray);
+                System.out.println(message);
+                remoteClient.send(message);
+                playingFileName.setText(resultData.getStringExtra("FILENAME"));
+            } catch (Exception e) {
+                Log.e("ERROR", "something went wrong");
+                e.printStackTrace();
             }
         }
     }
@@ -306,6 +328,7 @@ public class FileFragment extends Fragment {
         int bytesRead, bytesAvailable, bufferSize;
         byte[] buffer;
         int maxBufferSize = 1 * 1024 * 1024;
+        System.out.println("Upload file path: " + sourceFilePath);
         File sourceFile = new File(sourceFilePath);
         int serverResponseCode = 0;
 

@@ -6,6 +6,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class SocketIOUtil {
 
     public SocketIOUtil(){
@@ -20,7 +24,7 @@ public class SocketIOUtil {
      * This will be maintained further for communication between the client.
      * */
 
-    public String createMessage(String request, @Nullable Boolean status, @Nullable Integer code, @Nullable JSONArray result) throws JSONException {
+    public String createMessage(String request, @Nullable Boolean status, @Nullable Integer code, @Nullable String[] result) throws JSONException {
 
         /**
          * <request> parameter is a string that provides the instruction to be sent to the server.
@@ -30,12 +34,15 @@ public class SocketIOUtil {
          * @Nullable <result> parameter is a JSONArray that provides the result objects.
          * */
 
+//        System.out.println(Arrays.toString(result));
         JSONObject message = new JSONObject();
-        message.put("status", status == null ? true: status);
+        message.put("status", status);
         message.put("message", request);
-        message.put("code", code == null ? 200: code);
-        message.put("result", result == null ? new JSONArray(): result);
+        message.put("code", code);
+        message.put("result", new JSONArray(result));
 
+
+        //System.out.print(message.toString());
         return message.toString();
     }
 
@@ -73,6 +80,19 @@ public class SocketIOUtil {
         message.put("result", new JSONArray());
 
         return message.toString();
+    }
+
+    private String arrayToStringArray(String[] array){
+        StringBuilder result = new StringBuilder();
+        result.append("[");
+        for(int i = 0; i< array.length; i++){
+            result.append("\"" + array[i] + "\"");
+            if(i < array.length-1){
+                result.append(",");
+            }
+        }
+        result.append("]");
+        return result.toString();
     }
 
 }

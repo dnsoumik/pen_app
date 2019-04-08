@@ -73,6 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="No file is playing"
+            android:id="@+id/active_file_name_remote"
             android:textSize="10pt"
             android:layout_gravity="center"
             android:textColor="#ffff"/>
@@ -80,7 +81,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No Details"
+            android:text="No Description"
             android:layout_gravity="center"
             android:textSize="7pt"
             android:textColor="#ffff"/>

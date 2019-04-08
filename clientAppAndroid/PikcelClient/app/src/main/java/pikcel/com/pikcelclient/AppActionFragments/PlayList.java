@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.DefaultRetryPolicy;
@@ -159,11 +161,11 @@ public class PlayList extends Activity {
         @Override
         public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             View view = mInflater.inflate(R.layout.playlist_items, parent, false);
-            return new ViewHolder(view);
+            return new ViewHolder(view, getApplication());
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
             holder.fileName.setText(playList.get(position));
         }
 
@@ -172,18 +174,29 @@ public class PlayList extends Activity {
             return playList.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public class ViewHolder extends RecyclerView.ViewHolder{
 
             TextView fileName;
 
-            public ViewHolder(View itemView) {
+            public ViewHolder(View itemView, final Context context) {
                 super(itemView);
                 fileName = itemView.findViewById(R.id.file_name_playlist);
-            }
 
-            @Override
-            public void onClick(View view) {
-                Log.d("Clicked", Integer.toString(getAdapterPosition()));
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        int position  = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            String file_name = playList.get(position);
+
+                            Intent intent=new Intent();
+                            intent.putExtra("FILENAME",file_name);
+                            setResult(101,intent);
+                            finish();
+
+                        }
+                    }
+                });
             }
         }
     }
