@@ -37,7 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pikcel.com.pikcelclient.AppAction;
-import pikcel.com.pikcelclient.MainActivity;
 import pikcel.com.pikcelclient.R;
 
 import static java.security.AccessController.getContext;
@@ -219,11 +218,16 @@ public class PlayList extends Activity {
                         if(position != RecyclerView.NO_POSITION){
                             String file_name = playList.get(position);
 
-                            Intent intent=new Intent();
-                            intent.putExtra("FILENAME",file_name);
-                            setResult(101,intent);
-                            finish();
+//                            Intent intent=new Intent();
+//                            intent.putExtra("FILENAME",file_name);
+//                            intent.
+//                            setResult(101,intent);
+//                            finish();
 
+                            Intent playbackIntent = new Intent(PlayList.this, AppAction.class);
+                            playbackIntent.putExtra("ACTION", 1);
+                            playbackIntent.putExtra("FILENAME", file_name);
+                            startActivity(playbackIntent);
                         }
                     }
                 });

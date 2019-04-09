@@ -3,6 +3,7 @@ package pikcel.com.pikcelclient;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.BroadcastReceiver;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -62,7 +63,13 @@ public class AppAction extends Activity {
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-        loadFragment(new FileFragment());
+        Intent intent = getIntent();
+        int action = intent.getIntExtra("ACTION", 2);
+        if(action == 1)
+            loadFragment(new FileFragment());
+        else{
+            loadFragment(new RemoteControlFragment());
+        }
 
     }
 

@@ -53,7 +53,7 @@ public class RemoteControlFragment extends Fragment {
     SocketIOUtil socketUtil = new SocketIOUtil();
     Boolean playState = false;
     TextView playingFileName;
-
+    String fileName;
 
 
     @Nullable
@@ -61,6 +61,9 @@ public class RemoteControlFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         super.onCreate(savedInstanceState);
+
+        Bundle bundle = getArguments();
+        this.fileName = bundle.getString("FILENAME");
 
         URI uri;
         try{
@@ -118,8 +121,7 @@ public class RemoteControlFragment extends Fragment {
         playlistFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent playListActivity = new Intent(getActivity(), PlayList.class);
-                startActivityForResult(playListActivity, FileFragment.FILENAME_SELECTION_CODE);
+                getActivity().finish();
             }
         });
 
@@ -165,24 +167,23 @@ public class RemoteControlFragment extends Fragment {
             }
         });
 
-        return parentHolder;
-    }
+        /**
+         * Updating the player UI based on the filename
+         * */
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent resultData) {
-        super.onActivityResult(requestCode, resultCode, resultData);
-
-        if(requestCode == FileFragment.FILENAME_SELECTION_CODE){
+        if(fileName != null){
             try {
-                String[] resultArray = {resultData.getStringExtra("FILENAME")};
+                String[] resultArray = {fileName};
                 String message = socketUtil.createMessage("PLAY", true, 200, resultArray);
                 System.out.println(message);
                 remoteClient.send(message);
-                playingFileName.setText(resultData.getStringExtra("FILENAME"));
+                playingFileName.setText(fileName);
             } catch (Exception e) {
                 Log.e("ERROR", "something went wrong");
                 e.printStackTrace();
             }
         }
+
+        return parentHolder;
     }
 }
