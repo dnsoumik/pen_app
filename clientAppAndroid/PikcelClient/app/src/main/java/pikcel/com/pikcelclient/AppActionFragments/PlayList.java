@@ -68,7 +68,7 @@ public class PlayList extends Activity {
 //            }
 //        });
 
-        uploadFab = findViewById(R.id.upload_btn);
+        uploadFab = findViewById(R.id.uploadbtn);
 
         uploadFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,7 +77,8 @@ public class PlayList extends Activity {
                     public void run() {
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                Intent fileUpload = new Intent(PlayList.this, FileFragment.class);
+                                Intent fileUpload = new Intent(PlayList.this,
+                                        AppAction.class);
                                 startActivity(fileUpload);
                                 finish();
                             }
