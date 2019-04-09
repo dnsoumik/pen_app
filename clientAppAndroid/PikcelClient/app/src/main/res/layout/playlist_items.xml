@@ -7,20 +7,31 @@
     android:layout_marginBottom="5sp"
     android:layout_marginLeft="10sp"
     android:layout_marginRight="10sp"
-    android:paddingLeft="10dp">
+    android:weightSum="10"
+    android:paddingLeft="05dp">
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/playlist_icon"
+        android:layout_weight="3"
         android:layout_gravity="center"/>
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/file_name_playlist"
         android:text="FileName"
+        android:layout_weight="4"
         android:layout_margin="15sp"
         android:textColor="#ffffff"/>
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/delete_icon"
+        android:layout_weight="3"
+        android:layout_gravity="center"
+        android:background="@android:color/transparent"/>
 
 </LinearLayout>

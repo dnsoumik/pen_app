@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import pikcel.com.pikcelclient.AppActionFragments.PlayList;
+
 public class MainActivity extends Activity {
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
@@ -35,7 +37,7 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 if(checkPermissionREAD_EXTERNAL_STORAGE(MainActivity.this)){
-                    Intent dashboard = new Intent(MainActivity.this, AppAction.class);
+                    Intent dashboard = new Intent(MainActivity.this, PlayList.class);
                     startActivity(dashboard);
                     finish();
                 }

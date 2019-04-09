@@ -2,11 +2,13 @@ package pikcel.com.pikcelclient.AppActionFragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -34,6 +36,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import pikcel.com.pikcelclient.AppAction;
+import pikcel.com.pikcelclient.MainActivity;
 import pikcel.com.pikcelclient.R;
 
 import static java.security.AccessController.getContext;
@@ -42,6 +46,9 @@ public class PlayList extends Activity {
 
     RecyclerView recyclerView;
     PlayListAdpter adapter;
+    FloatingActionButton uploadFab;
+    ProgressDialog progressDialog = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +58,33 @@ public class PlayList extends Activity {
         recyclerView = findViewById(R.id.play_list_recycler);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ImageButton backButton = findViewById(R.id.btn_back_playlist);
-        backButton.setOnClickListener(new View.OnClickListener() {
+//        ImageButton backButton = findViewById(R.id.btn_back_playlist);
+//        backButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Intent mainActivity = new Intent(PlayList.this, AppAction.class);
+//                startActivity(mainActivity);
+//                finish();
+//            }
+//        });
+
+        uploadFab = findViewById(R.id.upload_btn);
+
+        uploadFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+               new Thread(new Runnable() {
+                    public void run() {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Intent fileUpload = new Intent(PlayList.this, FileFragment.class);
+                                startActivity(fileUpload);
+                                finish();
+                            }
+                        });
+
+                    }
+                }).start();
             }
         });
 
