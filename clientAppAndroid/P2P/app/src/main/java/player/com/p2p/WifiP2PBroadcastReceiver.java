@@ -66,7 +66,7 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
                 manager.requestConnectionInfo(channel, activity.connectionInfoListener);
             }else{
                 Toast.makeText(activity.getApplicationContext(), "Device Disconnected", Toast.LENGTH_SHORT).show();
-                activity.sendMsgBtn.setVisibility(View.GONE);
+                //activity.sendMsgBtn.setVisibility(View.GONE);
             }
 
             Log.e("BroadCastP2P", "Connection state changed");

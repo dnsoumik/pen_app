@@ -7,6 +7,7 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -80,13 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
         receiver = new WifiP2PBroadcastReceiver(manager, channel, this);
 
-        sendMsgBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendReceive.write(message.getBytes());
-            }
-        });
-
         discover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -126,6 +120,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(int i) {
                         Toast.makeText(getApplicationContext(), "Not connected", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        sendMsgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        sendReceive.write(message.getBytes());
                     }
                 });
             }
@@ -231,6 +237,8 @@ public class MainActivity extends AppCompatActivity {
                 sendReceive = new SendReceive(socket);
                 sendReceive.start();
 
+
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -260,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        public void write(byte[] bytes){
+        public void write(final byte[] bytes){
             try {
                 outputStream.write(bytes);
             } catch (IOException e) {
@@ -287,10 +295,6 @@ public class MainActivity extends AppCompatActivity {
             this.hostAddress = hostAddress.getHostAddress();
             socket = new Socket();
 
-            /**Start the send receive thread*/
-            sendReceive = new SendReceive(socket);
-            sendReceive.start();
-
         }
 
 
@@ -300,6 +304,17 @@ public class MainActivity extends AppCompatActivity {
                 socket.connect(new InetSocketAddress(this.hostAddress,8888), 500);
 
                 /**Code for sending message*/
+                /**Start the send receive thread*/
+                sendReceive = new SendReceive(socket);
+                sendReceive.start();
+
+//                sendMsgBtn.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        sendReceive.write(message.getBytes());
+//                    }
+//                });
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
