@@ -9,6 +9,7 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -65,6 +66,7 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
                 manager.requestConnectionInfo(channel, activity.connectionInfoListener);
             }else{
                 Toast.makeText(activity.getApplicationContext(), "Device Disconnected", Toast.LENGTH_SHORT).show();
+                activity.sendMsgBtn.setVisibility(View.GONE);
             }
 
             Log.e("BroadCastP2P", "Connection state changed");
