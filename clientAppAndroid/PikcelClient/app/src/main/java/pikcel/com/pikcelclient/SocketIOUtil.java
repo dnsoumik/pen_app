@@ -34,7 +34,7 @@ public class SocketIOUtil {
          * @Nullable <result> parameter is a JSONArray that provides the result objects.
          * */
 
-//        System.out.println(Arrays.toString(result));
+
         JSONObject message = new JSONObject();
         message.put("status", status);
         message.put("message", request);
