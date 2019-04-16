@@ -22,6 +22,12 @@
         android:text="Send Message"
         android:visibility="gone"/>
 
+    <Button
+        android:id="@+id/wifi_upload"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:text="Upload File"/>
+
     <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
