@@ -1,9 +1,15 @@
 package player.com.p2p;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -11,9 +17,14 @@ import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.OpenableColumns;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +42,8 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -48,15 +61,28 @@ import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import in.gauriinfotech.commons.Commons;
+
+import static android.content.ContentValues.TAG;
 
 public class MainActivity extends AppCompatActivity {
 
     Button discover, sendMsgBtn, UploadBtn;
     ListView wifiDeviceList;
     private static final int READ_REQUEST_CODE = 42;
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
+
+    /**
+     * Following two variables are important as they will contain the FilePath of the in queue
+     * file for upload and also the reference id for the same.
+     *
+     * By default the reference id is "1111111111"
+     * */
+    String UploadQueueFilePath;
+    String UploadQueueReferenceId = "1111111111";
 
     IntentFilter intentFilter;
     WifiP2pManager manager;
@@ -161,7 +187,10 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         Log.e("SOCKET MESSAGE", "sending message" + message);
                         if(MASTER_ROLE == 1){
-                            // TODO: Find a way to send message to client
+                            /**
+                             * No need to send a message to any client as the responses
+                             * are handled from SocketServer.
+                             * */
                         }else{
                             masterClient.send(message.getBytes());
                         }
@@ -173,10 +202,12 @@ public class MainActivity extends AppCompatActivity {
         UploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                intent.setType("*/*");
-                startActivityForResult(intent, READ_REQUEST_CODE);
+                if(checkPermissionREAD_EXTERNAL_STORAGE(MainActivity.this)){
+                    Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    intent.setType("*/*");
+                    startActivityForResult(intent, READ_REQUEST_CODE);
+                }
             }
         });
     }
@@ -187,26 +218,26 @@ public class MainActivity extends AppCompatActivity {
             Uri uri = null;
             if (data != null) {
                 uri = data.getData();
-                //dumpFileMetaData(uri);
+                HashMap<String, String> fileInfo = dumpFileMetaData(uri);
+                String mimeType = getMimeType(uri);
 
-                String realPath = Commons.getPath(data.getData(), getApplicationContext());
-                File ourFile = new File(realPath);
-                byte[] bytesArray = new byte[(int) ourFile.length()];
-                FileInputStream fis = null;
+                /** Create request for Server */
+
+                JSONObject fileUploadInfoRequest = new JSONObject();
                 try {
-                    fis = new FileInputStream(ourFile);
-                    fis.read(bytesArray); //read file into bytes[]
-                    fis.close();
+                    fileUploadInfoRequest.put("instruction", SocketServer.NEW_FILE_INFO);
+                    fileUploadInfoRequest.put("file_name", fileInfo.get("DisplayName"));
+                    fileUploadInfoRequest.put("extension", "");
+                    fileUploadInfoRequest.put("mime_type", mimeType);
 
-                    // Send the file through socket
-
-                    masterClient.send(bytesArray);
-
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
+                    masterClient.send(fileUploadInfoRequest.toString());
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                String realPath = Commons.getPath(data.getData(), getApplicationContext());
+
+                UploadQueueFilePath  = realPath;
             }
         }
     }
@@ -319,7 +350,7 @@ public class MainActivity extends AppCompatActivity {
             if(masterSocketServer == null){
                 try {
                     InetSocketAddress address  = new InetSocketAddress(hostAddress, 9999);
-                    this.server = new SocketServer(address);
+                    this.server = new SocketServer(address, getApplicationContext());
                     this.server.start();
                     masterSocketServer = this.server;
                     Log.d("SOCKET SERVER", "Server established");
@@ -406,6 +437,31 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onMessage(String message) {
                             Log.e(CLIENT_SOCKET_TAG, " Message: " + message);
+                            try {
+                                JSONObject response = new JSONObject(message);
+                                switch (response.getString("response_code")){
+                                    //TODO: Handle test cases here
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+//                            File ourFile = new File(realPath);
+//                            byte[] bytesArray = new byte[(int) ourFile.length()];
+//                            FileInputStream fis = null;
+//                            try {
+//                                fis = new FileInputStream(ourFile);
+//                                fis.read(bytesArray); //read file into bytes[]
+//                                fis.close();
+//
+//                                // Send the file through socket
+//
+//                                masterClient.send(bytesArray);
+//
+//                            } catch (FileNotFoundException e) {
+//                                e.printStackTrace();
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
                         }
 
                         @Override
@@ -421,19 +477,6 @@ public class MainActivity extends AppCompatActivity {
                     };
                     socket.connect();
                     masterClient = socket;
-//                socket.connect(new InetSocketAddress(this.hostAddress,8888), 500);
-//
-//                /**Code for sending message*/
-//                /**Start the send receive thread*/
-//                sendReceive = new SendReceive(socket);
-//                sendReceive.start();
-
-//                sendMsgBtn.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        sendReceive.write(message.getBytes());
-//                    }
-//                });
 
                 }catch (URISyntaxException e) {
                     e.printStackTrace();
@@ -442,45 +485,101 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class SocketServer extends WebSocketServer {
+    public boolean checkPermissionREAD_EXTERNAL_STORAGE(
+            final Context context) {
+        int currentAPIVersion = Build.VERSION.SDK_INT;
+//        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+//            if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+//                if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//                    showDialog("External storage", context,Manifest.permission.READ_EXTERNAL_STORAGE);
+//                } else {
+//                    ActivityCompat
+//                            .requestPermissions(
+//                                    (Activity) context,
+//                                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+//                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+//                }
+//                return false;
+//            } else {
+//                return true;
+//            }
+//
+//        } else {
+//            return true;
+//        }
 
-        String SOCKET_TAG = "SocketServer";
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) context,Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                showDialog("External storage", context,Manifest.permission.READ_EXTERNAL_STORAGE);
+            } else {
+                ActivityCompat
+                        .requestPermissions(
+                                (Activity) context,
+                                new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
 
-        public SocketServer(InetSocketAddress address){
-            super(address);
+    public void showDialog(final String msg, final Context context,
+                           final String permission) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+        alertBuilder.setCancelable(true);
+        alertBuilder.setTitle("Permission necessary");
+        alertBuilder.setMessage(msg + " permission is necessary");
+        alertBuilder.setPositiveButton(android.R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions((Activity) context,
+                                new String[] { permission },
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                    }
+                });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
+    }
+
+    public HashMap<String, String> dumpFileMetaData(Uri uri) {
+
+        HashMap<String, String> fileInfo = new HashMap<>();
+
+        Cursor cursor = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            cursor = getApplicationContext().getContentResolver()
+                    .query(uri, null, null, null, null, null);
         }
 
-        @Override
-        public void onOpen(org.java_websocket.WebSocket conn, ClientHandshake handshake) {
-            Log.e(SOCKET_TAG, " Server Listening...");
-        }
+        try {
 
-        @Override
-        public void onClose(org.java_websocket.WebSocket conn, int code, String reason, boolean remote) {
-            Log.e(SOCKET_TAG, " Server Closed");
-        }
+            if (cursor != null && cursor.moveToFirst()) {
 
-        @Override
-        public void onMessage(org.java_websocket.WebSocket conn, String message) {
-            Log.e(SOCKET_TAG, " Server Message: " + message);
-            conn.send("Thank you");
-        }
 
-        @Override
-        public void onMessage(WebSocket conn, ByteBuffer message) {
-            //super.onMessage(conn, message);
-            byte[] bytes = new byte[message.capacity()];
-        }
+                String displayName = cursor.getString(
+                        cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                Log.i(TAG, "Display Name: " + displayName);
+                fileInfo.put("DisplayName", displayName);
 
-        @Override
-        public void onError(org.java_websocket.WebSocket conn, Exception ex) {
-            Log.e(SOCKET_TAG, " Server Error");
-            ex.printStackTrace();
+                int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+                String size = null;
+                fileInfo.put("Size",size);
+                if (!cursor.isNull(sizeIndex)) {
+                    size = cursor.getString(sizeIndex);
+                } else {
+                    size = "Unknown";
+                }
+                Log.i(TAG, "Size: " + size);
+            }
+        } finally {
+            cursor.close();
         }
+        return fileInfo;
+    }
 
-        @Override
-        public void onStart() {
-
-        }
+    public String getMimeType(Uri uri){
+        ContentResolver contentResolver = getApplicationContext().getContentResolver();
+        return contentResolver.getType(uri);
     }
 }
