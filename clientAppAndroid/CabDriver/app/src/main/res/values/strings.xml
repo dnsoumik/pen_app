@@ -1,0 +1,49 @@
+<resources>
+    <string name="app_name">Farm2Home Driver</string>
+
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_main">Niljyoti Driver</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="New_user_request">New User Request</string>
+
+    <!--nav drawer-->
+    <string name="action_report">Report Card</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="rs">\u20A8</string>
+    <string name="rs_symbol">\u20B9</string>
+    <string name="rs_symbol_per_hour">\u20B9 / Hour </string>
+
+    <string name="tracking_is_off">Tracking Off</string>
+    <string name="tracking_is_on">Tracking On</string>
+
+    <string name="default_amount">\u20B9 </string>
+
+    <!--Start Up Screen -->
+    <string name="safe_and_smart">Safe and Smart</string>
+
+    <!--Report Activity-->
+    <string name="title_activity_driver_report">DriverReportActivity</string>
+    <string name="tab_text_1">Daily</string>
+    <string name="tab_text_2">Weekly</string>
+    <string name="tab_text_3">Monthly</string>
+
+    <!---->
+    <string name="driver_report_accept_request">Accept Request:</string>
+    <string name="driver_report_reject_request">Reject Request:</string>
+    <string name="driver_report_missed_request">Miss Request:</string>
+    <string name="driver_report_cancel_request">Cancel Request:</string>
+    <string name="driver_report_daily_earning">Daily Earning:</string>
+    <string name="driver_report_weekly_earning">Weekly Earning:</string>
+    <string name="driver_report_monthly_earning">Monthly Earning:</string>
+
+    <!--Order Status Text-->
+    <string name="order_start_trip">Status:\nOn Trip</string>
+    <string name="order_picked_up">Status:\nPicked Up</string>
+    <string name="order_delivered">Status:\nDelivered</string>
+</resources>

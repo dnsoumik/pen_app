@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/booking_info"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="10dp"
+    android:layout_marginTop="5dp"
+    android:layout_marginEnd="10dp"
+    android:layout_marginBottom="5dp"
+    android:background="@drawable/white_curved"
+    android:padding="15dp">
+
+    <ImageView
+        android:id="@+id/v_logo"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:contentDescription="TODO"
+        tools:ignore="ContentDescription, HardcodedText" />
+
+    <TextView
+        android:id="@+id/booking_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="5dp"
+        android:layout_toEndOf="@+id/v_logo"
+        android:textColor="@color/status_green"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/booking_start_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/booking_status"
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/v_logo"
+        android:textColor="#000" />
+
+    <TextView
+        android:id="@+id/v_type_and_reg_number"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/booking_start_time"
+
+        android:layout_marginStart="10dp"
+        android:layout_toEndOf="@+id/v_logo"
+        android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/total_cost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:text="@string/rs_symbol"
+        android:textColor="#000"
+        android:textSize="16sp" />
+
+    <ImageView
+        android:id="@+id/driver_img"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@+id/total_cost"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="5dp"
+        android:backgroundTint="#8923" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/v_type_and_reg_number"
+        android:layout_marginTop="10dp"
+        android:layout_toStartOf="@+id/driver_img"
+        android:layout_toEndOf="@+id/v_logo"
+        android:background="@drawable/white_curved">
+
+        <RelativeLayout
+            android:id="@+id/start_location_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white_curved">
+
+            <View
+                android:id="@+id/dot_green"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/holo_green_dark" />
+
+            <TextView
+                android:id="@+id/start_location_addr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_toEndOf="@+id/dot_green"
+                android:background="@drawable/white_curved"
+                android:maxLines="1"
+                android:padding="5dp"
+                android:textColor="#000"
+                android:textColorHint="#000"
+                android:textSize="12sp"
+                tools:ignore="LabelFor" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/stop_location_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/start_location_view"
+            android:background="@drawable/white_curved">
+
+            <View
+                android:id="@+id/dot_red"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/holo_red_dark" />
+
+            <TextView
+                android:id="@+id/stop_location_addr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_toEndOf="@+id/dot_red"
+                android:background="@drawable/white_curved"
+                android:maxLines="1"
+                android:padding="5dp"
+                android:textColor="#000"
+                android:textColorHint="#000"
+                android:textSize="12sp" />
+        </RelativeLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

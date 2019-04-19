@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bd_sign_in_act_filter">AuthorizationSignInActivityBroadCastFilter</string>
+    <string name="bd_sign_in_act_tag">AuthorizationSignInActivityBroadCastTag</string>
+
+    <string name="bd_sign_up_act_filter">AuthorizationSignUpActivityBroadCastFilter</string>
+    <string name="bd_sign_up_act_tag">AuthorizationSignUpActivityBroadCastTag</string>
+
+    <string name="bd_enter_otp_act_filter">AuthorizationEnterOtpActivityBroadCastFilter</string>
+    <string name="bd_enter_otp_act_tag">AuthorizationEnterOtpActivityBroadCastTag</string>
+
+    <!--default configuration-->
+    <string name="country_code">+91</string>
+
+    <!--Sign In-->
+    <string name="title_activity_sign_in">Sign In</string>
+    <string name="stay_connected_with_trakiga">Stay Connected with Farm2Home</string>
+    <string name="a_verification_alert">A verification code will be send to your mobile. Enter your country code and mobile number.</string>
+    <string name="don_t_have_any_account">Don\'t have any account? </string>
+    <string name="register_now">Register Now!</string>
+    <string name="carrier_sms_charges_may_apply">Carrier SMS charges may apply</string>
+    <string name="next_button_text">Next</string>
+
+    <!--Sign Up-->
+    <string name="title_activity_sign_up">Registration From</string>
+    <string name="activity_sign_up_action_bar">Register</string>
+    <string name="sign_in_successful_message">You are successfully Signed In</string>
+    <string name="welcome_to_trakiga">Welcome to Farm2Home</string>
+    <string name="welcome_message">Welcome to Farm2Home</string>
+    <string name="prompt_first_name">First name</string>
+    <string name="prompt_last_name">Last name</string>
+    <string name="prompt_mobile_number">Mobile Number</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_email_optional">Email ( Optional )</string>
+
+    <!--Enter Otp-->
+    <string name="title_activity_enter_otp">Enter OTP Form</string>
+    <string name="enter_one_time_password_otp">Enter One Time Password (OTP)</string>
+    <string name="verification_code_has_been_sent">A verification code has been sent to your mobile, please enter the code to Sign In</string>
+    <string name="wrong_number">Wrong Number?</string>
+    <string name="enter_the_4_digit_code">Enter the 4-digit code</string>
+    <string name="resend_sms">Resend SMS</string>
+    <string name="verify">Verify</string>
+    <string name="resend_alert_message">We will send another verification message to this mobile number:</string>
+    <string name="too_many_attempts">You\'ve reached the maximum number of attempts</string>
+
+    <!--Auto sign in SMS format-->
+    <string name="incoming_sms_format">verification code(OTP) is</string>
+
+</resources>

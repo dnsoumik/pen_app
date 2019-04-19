@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/white_curved"
+    android:orientation="vertical"
+    android:padding="15dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/booking_req_v_type_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                tools:src="@mipmap/ic_launcher_round">
+
+            </ImageView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/booking_req_v_type_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="#000"
+                android:textSize="10pt"
+                tools:text="Prime" />
+
+            <TextView
+                android:id="@+id/booking_req_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="8pt"
+                tools:text="Rs. 50.00" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="30dp"
+        android:paddingTop="0dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="20dp">
+
+        <RelativeLayout
+            android:id="@+id/start_location_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <View
+                android:id="@+id/dot_green"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/holo_green_dark" />
+
+            <TextView
+                android:id="@+id/start_location_addr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_toEndOf="@+id/dot_green"
+                android:maxLines="1"
+                android:padding="5dp"
+                android:textColor="#000"
+                android:textColorHint="#000"
+                android:textSize="12sp"
+                tools:ignore="LabelFor"
+                tools:text="Some address" />
+        </RelativeLayout>
+
+        <!--<RelativeLayout-->
+        <!--android:id="@+id/stop_location_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_below="@+id/start_location_view">-->
+
+        <!--<View-->
+        <!--android:id="@+id/dot_red"-->
+        <!--android:layout_width="10dp"-->
+        <!--android:layout_height="10dp"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginStart="10dp"-->
+        <!--android:background="@android:color/holo_red_dark" />-->
+
+        <!--<TextView-->
+        <!--android:id="@+id/stop_location_addr"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginStart="10dp"-->
+        <!--android:layout_toEndOf="@+id/dot_red"-->
+        <!--android:maxLines="1"-->
+        <!--android:padding="5dp"-->
+        <!--android:textColor="#000"-->
+        <!--android:textColorHint="#000"-->
+        <!--android:textSize="12sp"-->
+        <!--tools:text="Some address" />-->
+        <!--</RelativeLayout>-->
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/booking_accept"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/curved_area"
+            android:text="Accept"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="10pt" />
+
+        <Button
+            android:id="@+id/booking_reject"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/curved_area"
+            android:backgroundTint="@color/red_overlay"
+            android:text="Reject"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="10pt">
+
+        </Button>
+    </LinearLayout>
+</LinearLayout>

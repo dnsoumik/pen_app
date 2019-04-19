@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/request_info"
+    android:background="@drawable/white_curved"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".dialog.BookingRequestDialog">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/New_user_request"
+                android:textColor="#000"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="5dp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginBottom="05dp"
+            android:background="@android:color/darker_gray" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/booking_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000"
+                android:textSize="8pt"
+                tools:text="Rs. 50.00" />
+
+            <TextView
+                android:id="@+id/booking_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:textColor="#000"
+                android:textSize="6pt"
+                tools:text="Time" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+
+
+        <RelativeLayout
+            android:id="@+id/start_location_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone">
+
+            <View
+                android:id="@+id/dot_green"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:background="@android:color/holo_green_dark" />
+
+            <TextView
+                android:id="@+id/request_satrting_loc"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="5dp"
+                android:layout_toEndOf="@+id/dot_green"
+                android:maxLines="1"
+                android:padding="5dp"
+                android:textColor="#000"
+                android:textColorHint="#000"
+                android:textSize="12sp"
+                tools:ignore="LabelFor"
+                tools:text="Some address" />
+        </RelativeLayout>
+
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/stop_location_view"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_below="@+id/start_location_view">-->
+
+            <!--<View-->
+                <!--android:id="@+id/dot_red"-->
+                <!--android:layout_width="10dp"-->
+                <!--android:layout_height="10dp"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_marginStart="10dp"-->
+                <!--android:background="@android:color/holo_red_dark" />-->
+
+            <!--<TextView-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_marginStart="10dp"-->
+                <!--android:layout_toEndOf="@+id/dot_red"-->
+                <!--android:maxLines="1"-->
+                <!--android:padding="5dp"-->
+                <!--android:textColor="#000"-->
+                <!--android:textColorHint="#000"-->
+                <!--android:textSize="12sp"-->
+                <!--tools:text="Some address" />-->
+        <!--</RelativeLayout>-->
+    <!--</RelativeLayout>-->
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/request_accept"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/curved_area"
+            android:backgroundTint="@android:color/holo_green_dark"
+            android:text="Accept"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="10pt" />
+
+        <Button
+            android:id="@+id/request_reject"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="2dp"
+            android:layout_weight="1"
+            android:background="@drawable/curved_area"
+            android:backgroundTint="@color/red_overlay"
+            android:text="Reject"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="10pt" />
+    </LinearLayout>
+</LinearLayout>

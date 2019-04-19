@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activity.SettingsActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10sp"
+        android:layout_marginRight="10sp">
+
+        <ImageView
+            android:id="@+id/set_phone_icon"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:layout_marginStart="10sp"
+            android:layout_marginTop="25sp"
+            android:src="@mipmap/phone_icon"></ImageView>
+
+        <TextView
+            android:id="@+id/phoneNum_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60sp"
+            android:layout_marginTop="20sp"
+            android:text="Mobile Number"
+            android:textSize="18sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/phoneNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/phoneNum_txt"
+            android:layout_marginStart="60sp"
+            android:textColor="#000"
+            android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/interval_icon"
+            android:layout_width="40sp"
+            android:layout_height="40sp"
+            android:layout_below="@+id/set_phone_icon"
+            android:layout_marginStart="10sp"
+            android:layout_marginTop="25sp"
+            android:src="@mipmap/interval_icon" />
+
+        <TextView
+            android:id="@+id/lblInterval"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/phoneNum"
+            android:layout_marginLeft="60sp"
+            android:layout_marginTop="25dp"
+            android:text="Update interval"
+            android:textSize="18sp"
+            android:textStyle="italic" />
+
+        <RadioGroup
+            android:id="@+id/intervalRadioGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/lblInterval"
+            android:layout_marginStart="60sp"
+            android:layout_marginTop="10sp">
+
+            <RadioButton
+                android:id="@+id/i10s"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5sp"
+                android:paddingLeft="15dp"
+                android:text="10 seconds"
+                android:textColor="#000"
+                android:textSize="24sp" />
+
+            <RadioButton
+                android:id="@+id/i30s"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5sp"
+                android:paddingStart="15sp"
+                android:text="30 seconds"
+                android:textSize="24sp"></RadioButton>
+
+            <RadioButton
+                android:id="@+id/i1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5sp"
+                android:checked="true"
+                android:paddingStart="15sp"
+                android:text="1 minutes"
+                android:textSize="25sp"
+                tools:ignore="RtlSymmetry"></RadioButton>
+
+            <RadioButton
+                android:id="@+id/i5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5sp"
+                android:paddingStart="15sp"
+                android:text="5 minutes"
+                android:textSize="25sp"></RadioButton>
+
+            <RadioButton
+                android:id="@+id/i15"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5sp"
+                android:paddingStart="15sp"
+                android:text="15 minutes"
+                android:textSize="25sp"
+                tools:ignore="RtlSymmetry"></RadioButton>
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/tracking_button"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:layout_below="@+id/intervalRadioGroup"
+            android:layout_centerHorizontal="true"
+            android:layout_marginStart="60dp"
+            android:layout_marginTop="40dp"
+            android:background="@drawable/curved_area"
+            android:text="@string/tracking_is_on"
+            android:textAllCaps="false"
+            android:textColor="#fff"
+            android:textSize="9.5pt" />
+    </RelativeLayout>
+</ScrollView>

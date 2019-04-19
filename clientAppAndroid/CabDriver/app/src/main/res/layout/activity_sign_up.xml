@@ -1,0 +1,191 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#fff"
+    android:orientation="vertical"
+    tools:context="vts.xlayer.cab.niljyoti.driver.authorization.SignUpActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:focusableInTouchMode="true">
+
+        <ImageView
+            android:id="@+id/reg_app_logo"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="5dp"
+            android:focusable="false"
+            android:src="@drawable/app_icon"
+            tools:ignore="ContentDescription"></ImageView>
+
+        <View
+            android:id="@+id/reg_verline1"
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_below="@+id/reg_app_logo"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@android:color/darker_gray" />
+
+        <ProgressBar
+            android:id="@+id/sign_up_in_progress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/reg_verline1"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="80dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:id="@+id/sign_up_form"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/reg_verline1">
+
+            <TextView
+                android:id="@+id/reg_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:text="@string/welcome_to_trakiga"
+                android:textColor="#000"
+                android:textSize="10pt" />
+
+            <EditText
+                android:id="@+id/reg_first_name"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_below="@+id/reg_text"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/blue_border"
+                android:focusable="true"
+                android:hint="@string/prompt_first_name"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords|textPersonName"
+                android:lines="1"
+                android:nextFocusRight="@+id/reg_mobile_number"
+                android:nextFocusForward="@+id/reg_mobile_number"
+                android:paddingStart="20dp"
+                android:paddingEnd="5dp"
+                android:textSize="8.2pt"></EditText>
+
+            <EditText
+                android:id="@+id/reg_last_name"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_below="@+id/reg_first_name"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/blue_border"
+                android:focusable="true"
+                android:hint="@string/prompt_last_name"
+                android:imeOptions="actionNext"
+                android:inputType="textCapWords|textPersonName"
+                android:lines="1"
+                android:nextFocusRight="@+id/reg_mobile_number"
+                android:nextFocusForward="@+id/reg_mobile_number"
+                android:paddingStart="20dp"
+                android:paddingEnd="5dp"
+                android:textSize="8.2pt"></EditText>
+
+            <EditText
+                android:id="@+id/reg_country_code"
+                android:layout_width="wrap_content"
+                android:layout_height="55dp"
+                android:layout_below="@+id/reg_last_name"
+                android:layout_marginStart="30dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/blue_border"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:inputType="phone"
+                android:lines="1"
+                android:maxLength="4"
+                android:nextFocusForward="@+id/reg_mobile_number"
+                android:paddingStart="20dp"
+                android:paddingEnd="10dp"
+                android:text="@string/country_code"
+                android:textSize="8.2pt"
+                tools:ignore="LabelFor"></EditText>
+
+            <EditText
+                android:id="@+id/reg_mobile_number"
+                android:layout_width="wrap_content"
+                android:layout_height="55dp"
+                android:layout_below="@+id/reg_last_name"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="30dp"
+                android:layout_toEndOf="@+id/reg_country_code"
+                android:background="@drawable/blue_border"
+                android:hint="@string/prompt_mobile_number"
+                android:inputType="phone"
+                android:lines="1"
+                android:maxLength="10"
+                android:nextFocusForward="@+id/reg_email"
+                android:paddingStart="20dp"
+                android:paddingEnd="5dp"
+                android:textSize="8.2pt"></EditText>
+
+            <EditText
+                android:id="@+id/reg_email"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:layout_below="@+id/reg_mobile_number"
+                android:layout_marginLeft="30dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="30dp"
+                android:background="@drawable/blue_border"
+                android:hint="@string/prompt_email_optional"
+                android:imeActionLabel="@string/activity_sign_up_action_bar"
+                android:inputType="textEmailAddress"
+                android:lines="1"
+                android:paddingStart="20dp"
+                android:paddingEnd="5dp"
+                android:textSize="8.2pt"></EditText>
+
+            <Button
+                android:id="@+id/sign_up_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/reg_email"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="100dp"
+                android:layout_marginTop="60dp"
+                android:background="@drawable/curved_area"
+                android:text="@string/activity_sign_up_action_bar"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:textSize="8.2pt"
+                android:textStyle="bold"
+                tools:ignore="UnusedAttribute" />
+
+            <TextView
+                android:id="@+id/reg_hav_trb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/sign_up_button"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="5dp"
+                android:text="@string/carrier_sms_charges_may_apply"
+                android:textSize="5.2pt" />
+        </RelativeLayout>
+    </RelativeLayout>
+</ScrollView>
