@@ -263,8 +263,8 @@ public class SignInActivity extends AppCompatActivity {
                 JSONObject body = new JSONObject();
                 try {
                     body.put("application_id", BuildConfig.APPLICATION_ID);
-                    body.put("phone_number", mob_no);
-                    body.put("country_code", 91);
+                    body.put("phone_number", 91 + mob_no);
+//                    body.put("country_code", 91);
                     if (status.isOnlineWithToast()) {
                         authHttpRequestBuilder.SignInPost(body);
                     }

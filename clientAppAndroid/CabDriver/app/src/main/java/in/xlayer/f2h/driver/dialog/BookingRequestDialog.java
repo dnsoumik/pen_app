@@ -2,6 +2,7 @@ package in.xlayer.f2h.driver.dialog;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,6 +33,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import in.xlayer.f2h.driver.BuildConfig;
@@ -57,6 +60,7 @@ public class BookingRequestDialog extends FragmentActivity {
     private BroadcastHandler broadcastHandler;
     private SharedPreferenceManagement sharedPreferenceManager;
     TextView time, price, start_location;
+    SharedPreferences authSharedPreference;
 
 
     @SuppressLint("SetTextI18n")
@@ -64,6 +68,8 @@ public class BookingRequestDialog extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        authSharedPreference = getSharedPreferences(AuthStaticElements.APP_SIGN_IN_CACHE_MEMORY_TAG,
+                MODE_PRIVATE);
         StaticMemory.BOOKING_REQUEST_DIALOG_STATUS = 1;
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.dialog_booking_request);
@@ -103,43 +109,9 @@ public class BookingRequestDialog extends FragmentActivity {
             @Override
             public void onClick(View v) {
                 Log.e("TAG", "On Accept Button on click " );
-//                try {
-//                    JSONArray requestArray = new JSONArray(localMemory.getString(AppConstants.
-//                            BOOKING_REQUEST_LOG));
-//                    for (int i = 0; i < requestArray.length(); i++){
-//                        JSONObject obj = requestArray.getJSONObject(i);
-//                        if (Objects.equals(obj.getString("request_id"), bookingReq.getString
-//                                ("request_id"))){
-//                            obj.put("status", 1);
-//                            requestArray.put(i, obj);
-//                        }
-//                    }
-//
-//                    localMemory.putString(AppConstants.BOOKING_REQUEST_LOG,
-//                            requestArray.toString());
-//                    httpRequestBuilder.acceptRequest(bookingReq.getString("request_id"));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//                broadcastHandler.toBackgroundService(3);
-//                if (!StaticMemory.BOOKINGS_ACTIVITY ){
-//                    Log.e("BOOKINGS_ACTIVITY", "BOOKINGS_ACTIVITY is true ");
-//                    Intent bookingsActivity = new Intent(BookingRequestDialog.this,
-//                            BookingsActivity.class);
-//                    startActivity(bookingsActivity);
-//                    finish();
-//                }else{
-//                    Log.e("BOOKINGS_ACTIVITY", "BOOKINGS_ACTIVITY is false ");
-////                    Intent bookingsActivity = new Intent(BookingRequestDialog.this,
-////                            BookingsActivity.class);
-////                    startActivity(bookingsActivity);
-//                    finish();
-//                }
-
-                String URL = "https://f2h.trakiga.com/web/api/order_status";
-
-                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-                StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
+                String url = "https://f2h.trakiga.com/web/api/order_status";
+                RequestQueue rq = Volley.newRequestQueue(getApplicationContext());
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
@@ -148,7 +120,8 @@ public class BookingRequestDialog extends FragmentActivity {
                                     JSONObject res = new JSONObject(response);
                                     if (res.getBoolean("status")){
                                         sharedPreferenceManager.setOrderTripStarted();
-                                        Intent MainActivity = new Intent(BookingRequestDialog.this, in.xlayer.f2h.driver.activity.MainActivity.class);
+                                        Intent MainActivity = new Intent(
+                                                BookingRequestDialog.this, MainActivity.class);
                                         startActivity(MainActivity);
                                         finish();
                                     }
@@ -176,7 +149,7 @@ public class BookingRequestDialog extends FragmentActivity {
                         byte[] requestBody = new byte[1024];
                         JSONObject request = new JSONObject();
                         try {
-                            request.put("order_id", sharedPreferenceManager.getActiveOrderId());
+                            request.put("order_id", "5cb9e5203523895af7a0ee57");
                             request.put("application_id", BuildConfig.APPLICATION_ID);
                             request.put("status", "Start Trip");
                             requestBody = request.toString().getBytes("utf-8");
@@ -198,8 +171,14 @@ public class BookingRequestDialog extends FragmentActivity {
                         }
                         return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
                     }
+                    public Map<String, String> getHeaders() {
+                        HashMap<String, String> headers = new HashMap<>();
+                        headers.put("Authorization", "Bearer " + authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
+                        return headers;
+                    }
                 };
-                requestQueue.add(stringRequest);
+                rq.add(stringRequest);
+
             }
         });
 

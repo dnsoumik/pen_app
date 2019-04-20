@@ -289,8 +289,8 @@ public class EnterOTPActivity extends AppCompatActivity {
         try {
             Log.e(TAG, "phone_number: " + AuthStaticElements.AUTH_MOBILE_NUMBER);
             body.put("application_id", BuildConfig.APPLICATION_ID);
-            body.put("phone_number", AuthStaticElements.AUTH_MOBILE_NUMBER);
-            body.put("country_code", 91);
+            body.put("phone_number", 91 + AuthStaticElements.AUTH_MOBILE_NUMBER);
+//            body.put("country_code", 91);
             body.put("otp", entered_otp.getText().toString());
             Log.e(TAG, "attemptToVerify: " + body);
             if (status.isOnlineWithToast()) {

@@ -13,6 +13,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -37,10 +38,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -52,10 +55,12 @@ import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.squareup.picasso.Picasso;
 
+import org.jetbrains.annotations.Contract;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +73,7 @@ import in.xlayer.f2h.driver.adapter.BookingRequestAdapter;
 import in.xlayer.f2h.driver.adapter.RequestAdapter;
 import in.xlayer.f2h.driver.authorization.AuthStaticElements;
 import in.xlayer.f2h.driver.authorization.SignInActivity;
+import in.xlayer.f2h.driver.dialog.BookingRequestDialog;
 import in.xlayer.f2h.driver.handler.AppConstants;
 import in.xlayer.f2h.driver.handler.BroadcastHandler;
 import in.xlayer.f2h.driver.handler.HttpRequestBuilder;
@@ -195,7 +201,7 @@ public class MainActivity extends AppCompatActivity
         authSharedPreference = getSharedPreferences(AuthStaticElements.APP_SIGN_IN_CACHE_MEMORY_TAG, MODE_PRIVATE);
 
 
-        bookingEmpty = findViewById(R.id.request_empty);
+//        bookingEmpty = findViewById(R.id.request_empty);
         ActionButton = findViewById(R.id.btn_change_order_status);
         orderStatusText = findViewById(R.id.current_order_status_tv);
         orderDetailsCard = findViewById(R.id.order_details_card);
@@ -205,92 +211,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 String URL = "https://f2h.trakiga.com/web/api/order_status";
-
-//                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-//                StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
-//                        new Response.Listener<String>() {
-//                            @Override
-//                            public void onResponse(String response) {
-//                                Log.e("OrderResponse", response);
-//                                try {
-//                                    JSONObject res = new JSONObject(response);
-//                                    if (res.getBoolean("status")){
-////                                        sharedPreferenceManager.setOrderTripStarted();
-//                                        switch (sharedPreferenceManager.getActiveOrderStatus()){
-//
-//                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-//                StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
-//                        new Response.Listener<String>() {
-//                            @Override
-//                            public void onResponse(String response) {
-//                                Log.e("OrderResponse", response);
-//                                try {
-//                                    JSONObject res = new JSONObject(response);
-//                                    if (res.getBoolean("status")){
-////                                        sharedPreferenceManager.setOrderTripStarted();
-//                                        switch (sharedPreferenceManager.getActiveOrderStatus()){
-//                                          case SharedPreferenceManagement.ORDER_TRIP_STARTED_TEXT:
-//                                                sharedPreferenceManager.setOrderPickedUp();
-//                                                ActionButton.setText("Deliver Order");
-//                                                orderStatusText.setText("Picked Up");
-//                                                break;
-//                                            case SharedPreferenceManagement.ORDER_PICKEDUP_TEXT:
-//                                                sharedPreferenceManager.setOrderDeliver();
-//                                                orderStatusText.setText("Delivered");
-//                                                orderDetailsCard.setVisibility(View.GONE);
-//                                                bookingEmpty.setVisibility(View.VISIBLE);
-//                                                break;
-//                                        }
-//                                    }
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-//
-//                            }
-//                        }, new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-//                    }
-//                }) {
-//                    @NonNull
-//                    @Contract(pure = true)
-//                    @Override
-//                    public String getBodyContentType() {
-//                        return "application/json; charset=utf-8";
-//                    }
-//
-//                    @Nullable
-//                    @Override
-//                    public byte[] getBody() throws AuthFailureError {
-//                        byte[] requestBody = new byte[1024];
-//                        JSONObject request = new JSONObject();
-//                        try {
-//                            request.put("order_id", sharedPreferenceManager.getActiveOrderId());
-//                            request.put("application_id", BuildConfig.APPLICATION_ID);
-//                            request.put("status", sharedPreferenceManager.getNextOrderState());
-//                            requestBody = request.toString().getBytes("utf-8");
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        } catch (UnsupportedEncodingException e) {
-//                            e.printStackTrace();
-//                        }
-//                        return requestBody;
-//                    }
-//
-//                    @NonNull
-//                    @Override
-//                    protected Response<String> parseNetworkResponse(NetworkResponse response) {
-//                        String jsonString = "";
-//                        try {
-//                            jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-//                        } catch (UnsupportedEncodingException e) {
-//                            e.printStackTrace();
-//                        }
-//                        return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
-//                    }
-//                };
-//                requestQueue.add(stringRequest);
                 RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
                 StringRequest sr = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
                     @Override
@@ -309,7 +229,7 @@ public class MainActivity extends AppCompatActivity
                                         sharedPreferenceManager.setOrderDeliver();
                                         orderStatusText.setText("Delivered");
                                         orderDetailsCard.setVisibility(View.GONE);
-                                        bookingEmpty.setVisibility(View.VISIBLE);
+                                        bookingEmpty.setVisibility(View.GONE);
                                         break;
                                 }
                             }
@@ -514,7 +434,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
     }
 
 
@@ -532,7 +451,7 @@ public class MainActivity extends AppCompatActivity
             String reqLog = localMemory.getString(AppConstants.BOOKING_REQUEST_LOG);
             Log.i(TAG, "loadBookingRequestCURR: " + reqLog);
             if (Objects.equals(reqLog, "")) {
-                bookingEmpty.setVisibility(View.VISIBLE);
+                bookingEmpty.setVisibility(View.GONE);
                 Log.e(TAG, "Json object is null: ");
             } else {
                 JSONArray Jarray = new JSONArray(reqLog);
