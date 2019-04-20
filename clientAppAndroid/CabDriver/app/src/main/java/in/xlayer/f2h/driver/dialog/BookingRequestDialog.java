@@ -85,6 +85,10 @@ public class BookingRequestDialog extends FragmentActivity {
         accept_button = findViewById(R.id.request_accept);
         reject_button = findViewById(R.id.request_reject);
 
+        Intent intent = getIntent();
+        final String OrderId = intent.getStringExtra("order_id");
+
+        Log.e("OrderId in Background", OrderId);
         try {
 
             JSONObject arr = StaticMemory.CURRENT_BOOKING_REQUEST;
@@ -110,6 +114,16 @@ public class BookingRequestDialog extends FragmentActivity {
             public void onClick(View v) {
                 broadcastHandler.toBackgroundService(3);
                 Log.e("TAG", "On Accept Button on click " );
+
+                final JSONObject jsonObject = new JSONObject();
+                try {
+                    jsonObject.put("application_id", BuildConfig.APPLICATION_ID);
+                    jsonObject.put("order_id", OrderId);
+                    jsonObject.put("status", "Start Trip");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 String url = "https://f2h.trakiga.com/web/api/order_status";
                 RequestQueue rq = Volley.newRequestQueue(getApplicationContext());
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
@@ -120,6 +134,7 @@ public class BookingRequestDialog extends FragmentActivity {
                                 try {
                                     JSONObject res = new JSONObject(response);
                                     if (res.getBoolean("status")){
+                                        sharedPreferenceManager.createCurrentOrderRecord(OrderId);
                                         sharedPreferenceManager.setOrderTripStarted();
                                         Intent MainActivity = new Intent(
                                                 BookingRequestDialog.this, MainActivity.class);
@@ -147,17 +162,11 @@ public class BookingRequestDialog extends FragmentActivity {
                     @Nullable
                     @Override
                     public byte[] getBody() throws AuthFailureError {
-                        byte[] requestBody = new byte[1024];
-                        JSONObject request = new JSONObject();
                         try {
-                            request.put("order_id", sharedPreferenceManager.getActiveOrderId());
-                            request.put("application_id", BuildConfig.APPLICATION_ID);
-                            request.put("status", "Start Trip");
-                            requestBody = request.toString().getBytes("utf-8");
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        } finally {
-                            return requestBody;
+                            return jsonObject.toString() == null ? null : jsonObject.toString().getBytes("utf-8");
+                        } catch (UnsupportedEncodingException uee) {
+                            VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", jsonObject.toString(), "utf-8");
+                            return null;
                         }
                     }
 

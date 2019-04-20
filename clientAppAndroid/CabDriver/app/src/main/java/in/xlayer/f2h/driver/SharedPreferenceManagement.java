@@ -37,9 +37,9 @@ public class SharedPreferenceManagement {
     public void createCurrentOrderRecord(String orderId){
         if(hasActiveOrder()){
             clearActiveOrder();
-            setHasActiveOrder(true);
-            setActiveOrderId(orderId);
         }
+        setHasActiveOrder(true);
+        setActiveOrderId(orderId);
     }
 
     public boolean hasActiveOrder(){

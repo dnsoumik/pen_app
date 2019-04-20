@@ -213,6 +213,7 @@ public class MainActivity extends AppCompatActivity
         sharedPreferenceManager = new SharedPreferenceManagement(getApplicationContext());
         authSharedPreference = getSharedPreferences(AuthStaticElements.APP_SIGN_IN_CACHE_MEMORY_TAG, MODE_PRIVATE);
 
+        Log.e("ActiveOrderId", sharedPreferenceManager.getActiveOrderId());
 
 //        bookingEmpty = findViewById(R.id.request_empty);
         ActionButton = findViewById(R.id.btn_change_order_status);
@@ -340,11 +341,10 @@ public class MainActivity extends AppCompatActivity
             /**Query the active order*/
             Log.e("ACTIVE-ORDER", "TRUE");
 
-
-
             RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
             final Context context = MainActivity.this;
             String URL = localMemory.getServerUrl() + "/web/api/user_info?order_id=" + sharedPreferenceManager.getActiveOrderId();
+            Log.e("fetch url", URL);
             requestQueue.add(new StringRequest(Request.Method.GET, URL,
                     new Response.Listener<String>() {
                         @SuppressLint("LongLogTag")

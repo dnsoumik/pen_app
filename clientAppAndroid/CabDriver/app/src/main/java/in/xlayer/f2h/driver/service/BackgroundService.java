@@ -363,12 +363,13 @@ public class BackgroundService extends Service {
             Log.e(TAG, "handleSocketMessage: " + message);
             JSONObject jsonObject = new JSONObject(message);
             String OrderId = jsonObject.getString("order_id");
-            sharedPreferenceManager.setActiveOrderId(OrderId);
+            Log.e("RequestedOrder", OrderId);
             notificationHandler.notify("New Booking Request has came",
                     "Click here for more information");
             alertSoundBuilder.startSound();
             Intent bookingReqDialog = new Intent(this,
                     BookingRequestDialog.class);
+            bookingReqDialog.putExtra("order_id", OrderId);
             startActivity(bookingReqDialog);
         } catch (JSONException e) {
             e.printStackTrace();
@@ -376,3 +377,6 @@ public class BackgroundService extends Service {
     }
 
 }
+// 5cbb175b3523893120fc728b
+// 5cbb175b3523893120fc728b
+// 5cbb175b3523893120fc728b
