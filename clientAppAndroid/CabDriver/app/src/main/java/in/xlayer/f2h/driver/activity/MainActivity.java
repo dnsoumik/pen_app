@@ -31,9 +31,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,6 +63,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -101,6 +106,13 @@ public class MainActivity extends AppCompatActivity
     private HttpRequestBuilder httpRequestBuilder;
     private View bookingEmpty;
     private Button ActionButton;
+    private ListView orderItemsList;
+
+    /**
+     * Order Card related text views
+     * */
+    private TextView deliveryTime, orderIdText, customerName, customerPhone, farmerName, farmerPhone;
+
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private BroadcastReceiver localBroadCastReceiver = new BroadcastReceiver() {
         @Override
@@ -206,13 +218,146 @@ public class MainActivity extends AppCompatActivity
         orderStatusText = findViewById(R.id.current_order_status_tv);
         orderDetailsCard = findViewById(R.id.order_details_card);
         bookingEmpty = findViewById(R.id.booking_resp);
+        deliveryTime = findViewById(R.id.delivery_time);
+        orderIdText = findViewById(R.id.order_id);
+        customerName = findViewById(R.id.customer_name);
+        customerPhone = findViewById(R.id.customer_phone);
+        farmerName = findViewById(R.id.farmer_name);
+        farmerPhone = findViewById(R.id.farmer_phone);
+        orderItemsList = findViewById(R.id.order_contents_list_view);
 
         ActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String URL = "https://f2h.trakiga.com/web/api/order_status";
+
+                final JSONObject jsonObject = new JSONObject();
+
+                final Context context = getApplicationContext();
+                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+                String URL = localMemory.getServerUrl() + "/web/api/order_status";
+                requestQueue.add(new StringRequest(Request.Method.GET, URL,
+                        new Response.Listener<String>() {
+                            @SuppressLint("LongLogTag")
+                            @Override
+                            public void onResponse(String response) {
+
+                                Log.e("ORDER_STATUS_RESPONSE", response);
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(context, "Failed", LENGTH_SHORT).show();
+                    }
+                }) {
+            @NonNull
+            @Contract(pure = true)
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Nullable
+            @Override
+            public byte[] getBody() {
+                return jsonObject.toString() == null ? null : jsonObject.toString().getBytes(StandardCharsets.UTF_8);
+            }
+
+            @NonNull
+            @Override
+            protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                String jsonString = "";
+                try {
+                    jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
+            }
+
+                    //This is for Headers If You Needed
+                    @Override
+                    public Map<String, String> getHeaders() {
+                        HashMap<String, String> headers = new HashMap<>();
+                        headers.put("Authorization", "Bearer " + authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
+                        return headers;
+                    }
+                });
+
+//                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+//                StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
+//                        new Response.Listener<String>() {
+//                            @Override
+//                            public void onResponse(String response) {
+//                                Log.e("OrderResponse", response);
+//                                try {
+//                                    JSONObject res = new JSONObject(response);
+//                                    if (res.getBoolean("status")){
+////                                        sharedPreferenceManager.setOrderTripStarted();
+//                                        switch (sharedPreferenceManager.getActiveOrderStatus()){
+//                                            case SharedPreferenceManagement.ORDER_TRIP_STARTED_TEXT:
+//                                                sharedPreferenceManager.setOrderPickedUp();
+//                                                ActionButton.setText("Deliver Order");
+//                                                orderStatusText.setText("Picked Up");
+//                                                break;
+//                                            case SharedPreferenceManagement.ORDER_PICKEDUP_TEXT:
+//                                                sharedPreferenceManager.setOrderDeliver();
+//                                                orderStatusText.setText("Delivered");
+//                                                orderDetailsCard.setVisibility(View.GONE);
+//                                                bookingEmpty.setVisibility(View.VISIBLE);
+//                                                break;
+//                                        }
+//                                    }
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
+//
+//                            }
+//                        }, new Response.ErrorListener() {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
+//                    }
+//                }) {
+//                    @NonNull
+//                    @Contract(pure = true)
+//                    @Override
+//                    public String getBodyContentType() {
+//                        return "application/json; charset=utf-8";
+//                    }
+//
+//                    @Nullable
+//                    @Override
+//                    public byte[] getBody() throws AuthFailureError {
+//                        byte[] requestBody = new byte[1024];
+//                        JSONObject request = new JSONObject();
+//                        try {
+//                            request.put("order_id", sharedPreferenceManager.getActiveOrderId());
+//                            request.put("application_id", BuildConfig.APPLICATION_ID);
+//                            request.put("status", sharedPreferenceManager.getNextOrderState());
+//                            requestBody = request.toString().getBytes("utf-8");
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        } catch (UnsupportedEncodingException e) {
+//                            e.printStackTrace();
+//                        }
+//                        return requestBody;
+//                    }
+//
+//                    @NonNull
+//                    @Override
+//                    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+//                        String jsonString = "";
+//                        try {
+//                            jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+//                        } catch (UnsupportedEncodingException e) {
+//                            e.printStackTrace();
+//                        }
+//                        return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
+//                    }
+//                };
+//                requestQueue.add(stringRequest);
                 RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-                StringRequest sr = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+                StringRequest sr = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Log.e("ORDER-RESPONSE", response);
@@ -243,20 +388,21 @@ public class MainActivity extends AppCompatActivity
                         error.printStackTrace();
                     }
                 }) {
-                    @Override
-                    protected Map<String, String> getParams() {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("order_id", "5cb21d2135238959c3c7a285");
-                        params.put("application_id", BuildConfig.APPLICATION_ID);
-
-                        return params;
-                    }
+//                    @Override
+//                    protected Map<String, String> getParams() {
+//                        Map<String, String> params = new HashMap<String, String>();
+//                        params.put("order_id", "5cb9e5203523895af7a0ee57");
+//                        params.put("application_id", BuildConfig.APPLICATION_ID);
+//
+//                        return params;
+//                    }
 
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
                         Map<String, String> params = new HashMap<String, String>();
                         params.put("Content-Type", "application/x-www-form-urlencoded");
-                        params.put("Authorization", "Bearer " + authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
+                        params.put("Authorization", "Bearer " +
+                                authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
                         return params;
                     }
                 };
@@ -361,13 +507,13 @@ public class MainActivity extends AppCompatActivity
         final Context context = MainActivity.this;
         final JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("order_id", "5cb4507b3523891714ddffda");
+            jsonObject.put("order_id", "5cb9e5203523895af7a0ee57");
             jsonObject.put("application_id", BuildConfig.APPLICATION_ID);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String orderId = "5cb4507b3523891714ddffda";
+        final String orderId = "5cb9e5203523895af7a0ee57";
 
         Log.e("AuthToken",
                 authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
@@ -378,20 +524,88 @@ public class MainActivity extends AppCompatActivity
                     @SuppressLint("LongLogTag")
                     @Override
                     public void onResponse(String response) {
-//                        if (!response.isEmpty()) {
-//                            HttpResponseBuilder responseBuilder = new Gson().fromJson(response, HttpResponseBuilder.class);
-//                            try {
-//                                if (responseBuilder.getRespCode()) {
-//                                    broadcastHandler.localBroadCastToBookingActivity(70);
-//                                    Toast.makeText(context, responseBuilder.getRespMsg(), LENGTH_SHORT).show();
-//                                    broadcastHandler.toBookingCompleteActivity(30);
-//                                } else {
-//                                    Toast.makeText(context, responseBuilder.getRespMsg(), LENGTH_SHORT).show();
-//                                }
-//                            } catch (NullPointerException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
+                        if (!response.isEmpty()) {
+                            try{
+                                JSONObject order_info = new JSONObject(response);
+                                if(order_info.getBoolean("status")){
+
+                                    JSONArray order = order_info.getJSONArray("result");
+
+                                    JSONObject orderComponents = order.getJSONObject(0);
+
+                                    /**
+                                     * Print order components to their respective TextViews
+                                     * */
+
+                                    /**
+                                     * Delivery Time
+                                     * */
+
+                                    deliveryTime.setText(new java.util.Date((long)orderComponents.getDouble("delivery_time")*1000).toString());
+                                    orderIdText.setText(orderId);
+
+                                    /**
+                                     * Invoice Details
+                                     * */
+
+                                    JSONObject invoiceDetails = orderComponents.getJSONObject("inv_info");
+
+                                    List<String> orderContents = new ArrayList<>();
+
+                                    JSONArray itemList = invoiceDetails.getJSONArray("items");
+
+                                    for(int i = 0; i < itemList.length(); i++){
+                                        JSONObject item = itemList.getJSONObject(i);
+
+                                        String itemText = "Item: " + item.getString("title")
+                                                + "\nQuantity: " + Integer.toString(item.getInt("cost"))
+                                                + "\nDescription: " + item.getString("desc") + "\n\n";
+
+                                        orderContents.add(itemText);
+                                    }
+
+                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                                            getApplicationContext(),
+                                            android.R.layout.simple_list_item_1,
+                                            orderContents );
+                                    orderItemsList.setAdapter(adapter);
+
+                                    Log.e("Invoice Details", invoiceDetails.toString());
+
+                                    /**
+                                     * User Details
+                                     * */
+
+                                    JSONObject userDetails = orderComponents.getJSONObject("user_info");
+
+                                    customerName.setText(userDetails.getString("first_name") + " " + userDetails.getString("last_name"));
+                                    customerPhone.setText(userDetails.getString("phone_number"));
+
+                                    Log.e("User Details", userDetails.toString());
+
+
+                                    /**
+                                     * Farmer Details
+                                     * */
+
+                                    JSONObject farmerDetails = orderComponents.getJSONObject("farmer_info");
+
+                                    farmerName.setText(farmerDetails.getString("first_name") + " " + farmerDetails.getString("last_name"));
+                                    farmerPhone.setText(farmerDetails.getString("phone_number"));
+
+                                    Log.e("Farmer Details", farmerDetails.toString());
+
+                                    /**
+                                     * Finally hide the "No Orders Available" text and show the Order Card
+                                     * */
+
+                                    bookingEmpty.setVisibility(View.GONE);
+                                    orderDetailsCard.setVisibility(View.VISIBLE);
+                                }
+                            } catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                        }
                         Log.e("ORDER_RESPONSE", response);
                     }
                 }, new Response.ErrorListener() {

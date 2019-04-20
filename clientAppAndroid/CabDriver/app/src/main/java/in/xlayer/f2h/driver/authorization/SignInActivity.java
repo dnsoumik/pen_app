@@ -70,9 +70,10 @@ public class SignInActivity extends AppCompatActivity {
                         showProgress(false);
                         if (AuthStaticElements.SIGN_IN_RESPONSE.getCode() != null) {
                             if (AuthStaticElements.SIGN_IN_RESPONSE.getStatus()) {
-                                AuthStaticElements.AUTH_MOBILE_NUMBER = mobile_number.getText().toString();
+                                AuthStaticElements.AUTH_MOBILE_NUMBER = "91" + mobile_number.getText().toString();
                                 AuthStaticElements.OTP_ACTIVITY_PARENT = SignInActivity.class.getName();
                                 Intent enterOtp = new Intent(SignInActivity.this, EnterOTPActivity.class);
+                                enterOtp.putExtra("phone_number", AuthStaticElements.AUTH_MOBILE_NUMBER);
                                 startActivity(enterOtp);
                                 finish();
                             } else {

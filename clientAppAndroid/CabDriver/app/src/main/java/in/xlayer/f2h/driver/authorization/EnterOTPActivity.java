@@ -48,6 +48,7 @@ public class EnterOTPActivity extends AppCompatActivity {
     private TextView resend_timer;
     private int otp_count = 1;
     private boolean isResend_sms = true;
+    private String currentPhoneNumber;
     private AlertDialog.Builder resendSmsAlert;
     private BroadcastReceiver localBroadCastReceiver = new BroadcastReceiver() {
         @Override
@@ -112,6 +113,13 @@ public class EnterOTPActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_enter_otp);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
+
+        /**
+         * Parse phone number provided by the calling activity
+         * */
+
+        Intent currentIntent = getIntent();
+        currentPhoneNumber = currentIntent.getStringExtra("phone_number");
 
 //        localMemory = new AuthLocalMemory(this);
         status = new AuthDeviceStatus(this);
@@ -287,10 +295,10 @@ public class EnterOTPActivity extends AppCompatActivity {
         showProgress(true);
         JSONObject body = new JSONObject();
         try {
-            Log.e(TAG, "phone_number: " + AuthStaticElements.AUTH_MOBILE_NUMBER);
+            Log.e(TAG, "phone_number: " + currentPhoneNumber);
             body.put("application_id", BuildConfig.APPLICATION_ID);
-            body.put("phone_number", 91 + AuthStaticElements.AUTH_MOBILE_NUMBER);
-//            body.put("country_code", 91);
+            body.put("phone_number", currentPhoneNumber);
+            body.put("country_code", 91);
             body.put("otp", entered_otp.getText().toString());
             Log.e(TAG, "attemptToVerify: " + body);
             if (status.isOnlineWithToast()) {

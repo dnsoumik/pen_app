@@ -145,26 +145,6 @@
             </RelativeLayout>
 
             <EditText
-                android:id="@+id/reg_country_code"
-                android:layout_width="wrap_content"
-                android:layout_height="55dp"
-                android:layout_below="@+id/numView"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/blue_border"
-                android:focusableInTouchMode="true"
-                android:gravity="center"
-                android:inputType="phone"
-                android:lines="1"
-                android:maxLength="4"
-                android:nextFocusForward="@+id/reg_mobile_number"
-                android:paddingStart="20dp"
-                android:paddingEnd="10dp"
-                android:text="@string/country_code"
-                android:textSize="8.2pt"
-                tools:ignore="LabelFor"></EditText>
-
-            <EditText
                 android:id="@+id/enterOTP"
                 android:layout_width="wrap_content"
                 android:layout_height="55dp"

@@ -233,7 +233,7 @@ public class SignUpActivity extends AppCompatActivity {
         // Store values at the time of the login attempt.
         String f_name = first_name.getText().toString();
         String l_name = last_name.getText().toString();
-        Long mob_no = Long.valueOf(mobile_number.getText().toString());
+        Long mob_no = Long.valueOf("91" + mobile_number.getText().toString());
         String email = email_id.getText().toString();
         Integer c_code = Integer.valueOf(country_code.getText().toString());
 
@@ -294,6 +294,7 @@ public class SignUpActivity extends AppCompatActivity {
                         Log.e(TAG, "attemptToSignUp: " + body );
                     }
                     Intent enterOtp = new Intent(SignUpActivity.this, EnterOTPActivity.class);
+                    enterOtp.putExtra("phone_numebr", mob_no);
                     startActivity(enterOtp);
                     finish();
                 } catch (JSONException e) {
