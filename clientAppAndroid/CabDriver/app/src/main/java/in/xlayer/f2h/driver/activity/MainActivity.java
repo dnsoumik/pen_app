@@ -338,6 +338,8 @@ public class MainActivity extends AppCompatActivity
 
         if(sharedPreferenceManager.hasActiveOrder()){
             /**Query the active order*/
+            Log.e("ACTIVE-ORDER", "TRUE");
+
 
 
             RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
@@ -450,6 +452,7 @@ public class MainActivity extends AppCompatActivity
 
         }else{
             bookingEmpty.setVisibility(View.VISIBLE);
+            orderDetailsCard.setVisibility(GONE);
         }
 
 

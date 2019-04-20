@@ -45,7 +45,8 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="10sp"
                         android:elevation="10sp"
-                        android:id="@+id/order_details_card">
+                        android:id="@+id/order_details_card"
+                        android:visibility="gone">
 
                         <LinearLayout
                             android:layout_width="match_parent"
