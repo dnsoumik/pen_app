@@ -217,7 +217,19 @@ public class MainActivity extends AppCompatActivity
 //                                    if (res.getBoolean("status")){
 ////                                        sharedPreferenceManager.setOrderTripStarted();
 //                                        switch (sharedPreferenceManager.getActiveOrderStatus()){
-//                                            case SharedPreferenceManagement.ORDER_TRIP_STARTED_TEXT:
+//
+//                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+//                StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
+//                        new Response.Listener<String>() {
+//                            @Override
+//                            public void onResponse(String response) {
+//                                Log.e("OrderResponse", response);
+//                                try {
+//                                    JSONObject res = new JSONObject(response);
+//                                    if (res.getBoolean("status")){
+////                                        sharedPreferenceManager.setOrderTripStarted();
+//                                        switch (sharedPreferenceManager.getActiveOrderStatus()){
+//                                          case SharedPreferenceManagement.ORDER_TRIP_STARTED_TEXT:
 //                                                sharedPreferenceManager.setOrderPickedUp();
 //                                                ActionButton.setText("Deliver Order");
 //                                                orderStatusText.setText("Picked Up");
