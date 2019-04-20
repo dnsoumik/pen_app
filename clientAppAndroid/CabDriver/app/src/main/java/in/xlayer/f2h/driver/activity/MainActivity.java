@@ -245,11 +245,13 @@ public class MainActivity extends AppCompatActivity
                                                 sharedPreferenceManager.setOrderPickedUp();
                                                 ActionButton.setText("Drop Order");
                                                 orderStatusText.setText("Order Picked Up");
+                                                orderDetailsCard.setVisibility(View.VISIBLE);
                                                 break;
                                             case SharedPreferenceManagement.ORDER_PICKEDUP_TEXT:
                                                 sharedPreferenceManager.setOrderDeliver();
                                                 sharedPreferenceManager.clearActiveOrder();
                                                 orderDetailsCard.setVisibility(GONE);
+                                                bookingEmpty.setVisibility(View.VISIBLE);
                                                 break;
                                             default:
                                                 Log.e("Order State", " Not Reachable");
@@ -280,7 +282,7 @@ public class MainActivity extends AppCompatActivity
                         byte[] requestBody = new byte[1024];
                         JSONObject request = new JSONObject();
                         try {
-                            request.put("order_id", "5cb9e5203523895af7a0ee57");
+                            request.put("order_id", sharedPreferenceManager.getActiveOrderId());
                             request.put("application_id", BuildConfig.APPLICATION_ID);
                             request.put("status", sharedPreferenceManager.getNextOrderState());
                             requestBody = request.toString().getBytes("utf-8");
@@ -446,6 +448,8 @@ public class MainActivity extends AppCompatActivity
                 }
             });
 
+        }else{
+            bookingEmpty.setVisibility(View.VISIBLE);
         }
 
 

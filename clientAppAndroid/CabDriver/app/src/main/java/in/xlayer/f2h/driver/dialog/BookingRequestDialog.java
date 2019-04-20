@@ -108,6 +108,7 @@ public class BookingRequestDialog extends FragmentActivity {
         accept_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                broadcastHandler.toBackgroundService(3);
                 Log.e("TAG", "On Accept Button on click " );
                 String url = "https://f2h.trakiga.com/web/api/order_status";
                 RequestQueue rq = Volley.newRequestQueue(getApplicationContext());
@@ -149,7 +150,7 @@ public class BookingRequestDialog extends FragmentActivity {
                         byte[] requestBody = new byte[1024];
                         JSONObject request = new JSONObject();
                         try {
-                            request.put("order_id", "5cb9e5203523895af7a0ee57");
+                            request.put("order_id", sharedPreferenceManager.getActiveOrderId());
                             request.put("application_id", BuildConfig.APPLICATION_ID);
                             request.put("status", "Start Trip");
                             requestBody = request.toString().getBytes("utf-8");

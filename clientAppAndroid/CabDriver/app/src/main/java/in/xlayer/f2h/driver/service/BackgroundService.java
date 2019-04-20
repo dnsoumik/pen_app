@@ -360,9 +360,9 @@ public class BackgroundService extends Service {
 
     public void handleSocketMessage(String message){
         try {
+            Log.e(TAG, "handleSocketMessage: " + message);
             JSONObject jsonObject = new JSONObject(message);
             String OrderId = jsonObject.getString("order_id");
-
             sharedPreferenceManager.setActiveOrderId(OrderId);
             notificationHandler.notify("New Booking Request has came",
                     "Click here for more information");
