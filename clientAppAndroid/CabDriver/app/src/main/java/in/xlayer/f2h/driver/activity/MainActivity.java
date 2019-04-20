@@ -89,6 +89,7 @@ import in.xlayer.f2h.driver.service.BackgroundService;
 import in.xlayer.f2h.driver.util.DeviceUtil;
 import in.xlayer.f2h.driver.ws.request.WSBookingRequest;
 
+import static android.view.View.GONE;
 import static android.widget.Toast.LENGTH_SHORT;
 
 
@@ -194,7 +195,7 @@ public class MainActivity extends AppCompatActivity
                         MainActivity.this, reList));
             } else {
                 empty.setVisibility(View.VISIBLE);
-                rideList.setVisibility(View.GONE);
+                rideList.setVisibility(GONE);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -206,7 +207,7 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         sharedPreferenceManager = new SharedPreferenceManagement(getApplicationContext());
@@ -229,199 +230,99 @@ public class MainActivity extends AppCompatActivity
         ActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                final JSONObject jsonObject = new JSONObject();
-
-                final Context context = getApplicationContext();
-                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-                String URL = localMemory.getServerUrl() + "/web/api/order_status";
-                requestQueue.add(new StringRequest(Request.Method.GET, URL,
+                String url = "https://f2h.trakiga.com/web/api/order_status";
+                RequestQueue rq = Volley.newRequestQueue(getApplicationContext());
+                StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
                         new Response.Listener<String>() {
-                            @SuppressLint("LongLogTag")
                             @Override
                             public void onResponse(String response) {
+                                Log.e("OrderResponse", response);
+                                try {
+                                    JSONObject res = new JSONObject(response);
+                                    if (res.getBoolean("status")) {
+                                        switch (sharedPreferenceManager.getActiveOrderStatus()) {
+                                            case SharedPreferenceManagement.ORDER_TRIP_STARTED_TEXT:
+                                                sharedPreferenceManager.setOrderPickedUp();
+                                                ActionButton.setText("Drop Order");
+                                                orderStatusText.setText("Order Picked Up");
+                                                break;
+                                            case SharedPreferenceManagement.ORDER_PICKEDUP_TEXT:
+                                                sharedPreferenceManager.setOrderDeliver();
+                                                sharedPreferenceManager.clearActiveOrder();
+                                                orderDetailsCard.setVisibility(GONE);
+                                                break;
+                                            default:
+                                                Log.e("Order State", " Not Reachable");
+                                        }
 
-                                Log.e("ORDER_STATUS_RESPONSE", response);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
                             }
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(context, "Failed", LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
                     }
                 }) {
-            @NonNull
-            @Contract(pure = true)
-            @Override
-            public String getBodyContentType() {
-                return "application/json; charset=utf-8";
-            }
-
-            @Nullable
-            @Override
-            public byte[] getBody() {
-                return jsonObject.toString() == null ? null : jsonObject.toString().getBytes(StandardCharsets.UTF_8);
-            }
-
-            @NonNull
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String jsonString = "";
-                try {
-                    jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
-            }
-
-                    //This is for Headers If You Needed
+                    @NonNull
+                    @Contract(pure = true)
                     @Override
-                    public Map<String, String> getHeaders() {
-                        HashMap<String, String> headers = new HashMap<>();
-                        headers.put("Authorization", "Bearer " + authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
-                        return headers;
+                    public String getBodyContentType() {
+                        return "application/json; charset=utf-8";
                     }
-                });
 
-//                RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-//                StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
-//                        new Response.Listener<String>() {
-//                            @Override
-//                            public void onResponse(String response) {
-//                                Log.e("OrderResponse", response);
-//                                try {
-//                                    JSONObject res = new JSONObject(response);
-//                                    if (res.getBoolean("status")){
-////                                        sharedPreferenceManager.setOrderTripStarted();
-//                                        switch (sharedPreferenceManager.getActiveOrderStatus()){
-//                                            case SharedPreferenceManagement.ORDER_TRIP_STARTED_TEXT:
-//                                                sharedPreferenceManager.setOrderPickedUp();
-//                                                ActionButton.setText("Deliver Order");
-//                                                orderStatusText.setText("Picked Up");
-//                                                break;
-//                                            case SharedPreferenceManagement.ORDER_PICKEDUP_TEXT:
-//                                                sharedPreferenceManager.setOrderDeliver();
-//                                                orderStatusText.setText("Delivered");
-//                                                orderDetailsCard.setVisibility(View.GONE);
-//                                                bookingEmpty.setVisibility(View.VISIBLE);
-//                                                break;
-//                                        }
-//                                    }
-//                                } catch (JSONException e) {
-//                                    e.printStackTrace();
-//                                }
-//
-//                            }
-//                        }, new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-//                    }
-//                }) {
-//                    @NonNull
-//                    @Contract(pure = true)
-//                    @Override
-//                    public String getBodyContentType() {
-//                        return "application/json; charset=utf-8";
-//                    }
-//
-//                    @Nullable
-//                    @Override
-//                    public byte[] getBody() throws AuthFailureError {
-//                        byte[] requestBody = new byte[1024];
-//                        JSONObject request = new JSONObject();
-//                        try {
-//                            request.put("order_id", sharedPreferenceManager.getActiveOrderId());
-//                            request.put("application_id", BuildConfig.APPLICATION_ID);
-//                            request.put("status", sharedPreferenceManager.getNextOrderState());
-//                            requestBody = request.toString().getBytes("utf-8");
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        } catch (UnsupportedEncodingException e) {
-//                            e.printStackTrace();
-//                        }
-//                        return requestBody;
-//                    }
-//
-//                    @NonNull
-//                    @Override
-//                    protected Response<String> parseNetworkResponse(NetworkResponse response) {
-//                        String jsonString = "";
-//                        try {
-//                            jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-//                        } catch (UnsupportedEncodingException e) {
-//                            e.printStackTrace();
-//                        }
-//                        return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
-//                    }
-//                };
-//                requestQueue.add(stringRequest);
-                RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-                StringRequest sr = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
+                    @Nullable
                     @Override
-                    public void onResponse(String response) {
-                        Log.e("ORDER-RESPONSE", response);
+                    public byte[] getBody() throws AuthFailureError {
+                        byte[] requestBody = new byte[1024];
+                        JSONObject request = new JSONObject();
                         try {
-                            JSONObject res = new JSONObject(response);
-                            if (res.getBoolean("status")) {
-                                switch (sharedPreferenceManager.getActiveOrderStatus()) {
-                                    case SharedPreferenceManagement.ORDER_TRIP_STARTED_TEXT:
-                                        sharedPreferenceManager.setOrderPickedUp();
-                                        ActionButton.setText("Deliver Order");
-                                        orderStatusText.setText("Picked Up");
-                                        break;
-                                    case SharedPreferenceManagement.ORDER_PICKEDUP_TEXT:
-                                        sharedPreferenceManager.setOrderDeliver();
-                                        orderStatusText.setText("Delivered");
-                                        orderDetailsCard.setVisibility(View.GONE);
-                                        bookingEmpty.setVisibility(View.GONE);
-                                        break;
-                                }
-                            }
-                        } catch (JSONException e) {
+                            request.put("order_id", "5cb9e5203523895af7a0ee57");
+                            request.put("application_id", BuildConfig.APPLICATION_ID);
+                            request.put("status", sharedPreferenceManager.getNextOrderState());
+                            requestBody = request.toString().getBytes("utf-8");
+                        } catch (Exception e) {
                             e.printStackTrace();
+                        } finally {
+                            return requestBody;
                         }
                     }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                }) {
-//                    @Override
-//                    protected Map<String, String> getParams() {
-//                        Map<String, String> params = new HashMap<String, String>();
-//                        params.put("order_id", "5cb9e5203523895af7a0ee57");
-//                        params.put("application_id", BuildConfig.APPLICATION_ID);
-//
-//                        return params;
-//                    }
 
+                    @NonNull
                     @Override
-                    public Map<String, String> getHeaders() throws AuthFailureError {
-                        Map<String, String> params = new HashMap<String, String>();
-                        params.put("Content-Type", "application/x-www-form-urlencoded");
-                        params.put("Authorization", "Bearer " +
-                                authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
-                        return params;
+                    protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                        String jsonString = "";
+                        try {
+                            jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
+                        } catch (UnsupportedEncodingException e) {
+                            e.printStackTrace();
+                        }
+                        return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
+                    }
+
+                    public Map<String, String> getHeaders() {
+                        HashMap<String, String> headers = new HashMap<>();
+                        headers.put("Authorization", "Bearer "
+                                + authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
+                        return headers;
                     }
                 };
-                queue.add(sr);
+                rq.add(stringRequest);
             }
         });
 
-//            bookingEmpty.setVisibility(View.VISIBLE);
-
         StaticMemory.MAIN_ACTIVITY_STATUS = 1;
-        localMemory = new LocalMemory(this);
-        broadcastHandler = new BroadcastHandler(this);
-//        locationService = new LocationService(this);
-        deviceUtil = new DeviceUtil(this);
-        httpRequestBuilder = new HttpRequestBuilder(this);
+        localMemory = new LocalMemory(getApplicationContext());
+        broadcastHandler = new BroadcastHandler(getApplicationContext());
+        deviceUtil = new DeviceUtil(getApplicationContext());
+        httpRequestBuilder = new HttpRequestBuilder(getApplicationContext());
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
-        LocalBroadcastManager.getInstance(this).registerReceiver(localBroadCastReceiver,
+        LocalBroadcastManager.getInstance(getApplicationContext()).registerReceiver(localBroadCastReceiver,
                 new IntentFilter(MainActivity.class.getName()));
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -431,227 +332,124 @@ public class MainActivity extends AppCompatActivity
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(MainActivity.this);
 
-        //if(sharedPreferenceManager.hasActiveOrder()){
-        /**Query the active order*/
+        if(sharedPreferenceManager.hasActiveOrder()){
+            /**Query the active order*/
 
-        String URL = "https://f2h.trakiga.com/web/api/user_info";
 
-//            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-//            StringRequest stringRequest = new StringRequest(Request.Method.POST, URL,
-//                    new Response.Listener<String>() {
-//                        @Override
-//                        public void onResponse(String response) {
-//                            Log.e("OrderResponse", response);
-//                            try {
-//                                JSONObject res = new JSONObject(response);
-//                                if (res.getBoolean("status")){
-//
-//                                    //TODO: Fill all the order related fields from the response
-//
-//                                    bookingEmpty.setVisibility(View.GONE);
-//                                    orderDetailsCard.setVisibility(View.VISIBLE);
-//                                }
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-//
-//                        }
-//                    }, new Response.ErrorListener() {
-//                @Override
-//                public void onErrorResponse(VolleyError error) {
-//                    Toast.makeText(getApplicationContext(), "error", Toast.LENGTH_SHORT).show();
-//                }
-//            }) {
-//                @NonNull
-//                @Contract(pure = true)
-//                @Override
-//                public String getBodyContentType() {
-//                    return "application/json; charset=utf-8";
-//                }
-//
-//                @Nullable
-//                @Override
-//                public byte[] getBody() throws AuthFailureError {
-//                    byte[] requestBody = new byte[1024];
-//                    JSONObject request = new JSONObject();
-//                    try {
-//                        //request.put("order_id", sharedPreferenceManager.getActiveOrderId());
-//                        request.put("order_id", "5cb21d2135238959c3c7a285");
-//                        request.put("application_id", BuildConfig.APPLICATION_ID);
-//                        requestBody = request.toString().getBytes("utf-8");
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    } catch (UnsupportedEncodingException e) {
-//                        e.printStackTrace();
-//                    }
-//                    Log.e("REQUEST-BODY", requestBody.toString());
-//                    return requestBody;
-//                }
-//
-//                @NonNull
-//                @Override
-//                protected Response<String> parseNetworkResponse(NetworkResponse response) {
-//                    String jsonString = "";
-//                    try {
-//                        jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-//                    } catch (UnsupportedEncodingException e) {
-//                        e.printStackTrace();
-//                    }
-//                    return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
-//                }
-//            };
-//            requestQueue.add(stringRequest);
-        RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
-        final Context context = MainActivity.this;
-        final JSONObject jsonObject = new JSONObject();
-        try {
-            jsonObject.put("order_id", "5cb9e5203523895af7a0ee57");
-            jsonObject.put("application_id", BuildConfig.APPLICATION_ID);
-        } catch (JSONException e) {
-            e.printStackTrace();
+            RequestQueue requestQueue = Volley.newRequestQueue(getApplicationContext());
+            final Context context = MainActivity.this;
+            String URL = localMemory.getServerUrl() + "/web/api/user_info?order_id=" + sharedPreferenceManager.getActiveOrderId();
+            requestQueue.add(new StringRequest(Request.Method.GET, URL,
+                    new Response.Listener<String>() {
+                        @SuppressLint("LongLogTag")
+                        @Override
+                        public void onResponse(String response) {
+                            if (!response.isEmpty()) {
+                                try{
+                                    JSONObject order_info = new JSONObject(response);
+                                    if(order_info.getBoolean("status")){
+
+                                        JSONArray order = order_info.getJSONArray("result");
+
+                                        JSONObject orderComponents = order.getJSONObject(0);
+
+                                        /**
+                                         * Print order components to their respective TextViews
+                                         * */
+
+                                        /**
+                                         * Delivery Time
+                                         * */
+
+                                        deliveryTime.setText(new java.util.Date((long)orderComponents.getDouble("delivery_time")*1000).toString());
+                                        orderIdText.setText(sharedPreferenceManager.getActiveOrderId());
+
+                                        /**
+                                         * Invoice Details
+                                         * */
+
+                                        JSONObject invoiceDetails = orderComponents.getJSONObject("inv_info");
+
+                                        List<String> orderContents = new ArrayList<>();
+
+                                        JSONArray itemList = invoiceDetails.getJSONArray("items");
+
+                                        for(int i = 0; i < itemList.length(); i++){
+                                            JSONObject item = itemList.getJSONObject(i);
+
+                                            String itemText = "Item: " + item.getString("title")
+                                                    + "\nQuantity: " + Integer.toString(item.getInt("cost"))
+                                                    + "\nDescription: " + item.getString("desc") + "\n\n";
+
+                                            orderContents.add(itemText);
+                                        }
+
+                                        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                                                getApplicationContext(),
+                                                android.R.layout.simple_list_item_1,
+                                                orderContents );
+                                        orderItemsList.setAdapter(adapter);
+
+                                        Log.e("Invoice Details", invoiceDetails.toString());
+
+                                        /**
+                                         * User Details
+                                         * */
+
+                                        JSONObject userDetails = orderComponents.getJSONObject("user_info");
+
+                                        customerName.setText(userDetails.getString("first_name") + " " + userDetails.getString("last_name"));
+                                        customerPhone.setText(userDetails.getString("phone_number"));
+
+                                        Log.e("User Details", userDetails.toString());
+
+
+                                        /**
+                                         * Farmer Details
+                                         * */
+
+                                        JSONObject farmerDetails = orderComponents.getJSONObject("farmer_info");
+
+                                        farmerName.setText(farmerDetails.getString("first_name") + " " + farmerDetails.getString("last_name"));
+                                        farmerPhone.setText(farmerDetails.getString("phone_number"));
+
+                                        Log.e("Farmer Details", farmerDetails.toString());
+
+                                        /**
+                                         * Finally hide the "No Orders Available" text and show the Order Card
+                                         * */
+
+                                        bookingEmpty.setVisibility(GONE);
+                                        orderDetailsCard.setVisibility(View.VISIBLE);
+                                    }
+                                } catch (JSONException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                            Log.e("ORDER_RESPONSE", response);
+                        }
+                    }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(context, "Failed", LENGTH_SHORT).show();
+                }
+            }) {
+
+                //This is for Headers If You Needed
+                @Override
+                public Map<String, String> getHeaders() {
+                    HashMap<String, String> headers = new HashMap<>();
+                    headers.put("Authorization", "Bearer " + authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
+                    return headers;
+                }
+            });
+
         }
 
-        final String orderId = "5cb9e5203523895af7a0ee57";
-
-        Log.e("AuthToken",
-                authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
-
-        URL = localMemory.getServerUrl() + "/web/api/user_info?order_id=" + orderId;
-        requestQueue.add(new StringRequest(Request.Method.GET, URL,
-                new Response.Listener<String>() {
-                    @SuppressLint("LongLogTag")
-                    @Override
-                    public void onResponse(String response) {
-                        if (!response.isEmpty()) {
-                            try{
-                                JSONObject order_info = new JSONObject(response);
-                                if(order_info.getBoolean("status")){
-
-                                    JSONArray order = order_info.getJSONArray("result");
-
-                                    JSONObject orderComponents = order.getJSONObject(0);
-
-                                    /**
-                                     * Print order components to their respective TextViews
-                                     * */
-
-                                    /**
-                                     * Delivery Time
-                                     * */
-
-                                    deliveryTime.setText(new java.util.Date((long)orderComponents.getDouble("delivery_time")*1000).toString());
-                                    orderIdText.setText(orderId);
-
-                                    /**
-                                     * Invoice Details
-                                     * */
-
-                                    JSONObject invoiceDetails = orderComponents.getJSONObject("inv_info");
-
-                                    List<String> orderContents = new ArrayList<>();
-
-                                    JSONArray itemList = invoiceDetails.getJSONArray("items");
-
-                                    for(int i = 0; i < itemList.length(); i++){
-                                        JSONObject item = itemList.getJSONObject(i);
-
-                                        String itemText = "Item: " + item.getString("title")
-                                                + "\nQuantity: " + Integer.toString(item.getInt("cost"))
-                                                + "\nDescription: " + item.getString("desc") + "\n\n";
-
-                                        orderContents.add(itemText);
-                                    }
-
-                                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                                            getApplicationContext(),
-                                            android.R.layout.simple_list_item_1,
-                                            orderContents );
-                                    orderItemsList.setAdapter(adapter);
-
-                                    Log.e("Invoice Details", invoiceDetails.toString());
-
-                                    /**
-                                     * User Details
-                                     * */
-
-                                    JSONObject userDetails = orderComponents.getJSONObject("user_info");
-
-                                    customerName.setText(userDetails.getString("first_name") + " " + userDetails.getString("last_name"));
-                                    customerPhone.setText(userDetails.getString("phone_number"));
-
-                                    Log.e("User Details", userDetails.toString());
-
-
-                                    /**
-                                     * Farmer Details
-                                     * */
-
-                                    JSONObject farmerDetails = orderComponents.getJSONObject("farmer_info");
-
-                                    farmerName.setText(farmerDetails.getString("first_name") + " " + farmerDetails.getString("last_name"));
-                                    farmerPhone.setText(farmerDetails.getString("phone_number"));
-
-                                    Log.e("Farmer Details", farmerDetails.toString());
-
-                                    /**
-                                     * Finally hide the "No Orders Available" text and show the Order Card
-                                     * */
-
-                                    bookingEmpty.setVisibility(View.GONE);
-                                    orderDetailsCard.setVisibility(View.VISIBLE);
-                                }
-                            } catch (JSONException e){
-                                e.printStackTrace();
-                            }
-                        }
-                        Log.e("ORDER_RESPONSE", response);
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "Failed", LENGTH_SHORT).show();
-            }
-        }) {
-//            @NonNull
-//            @Contract(pure = true)
-//            @Override
-//            public String getBodyContentType() {
-//                return "application/json; charset=utf-8";
-//            }
-
-//            @Nullable
-//            @Override
-//            public byte[] getBody() {
-//                return jsonObject.toString() == null ? null : jsonObject.toString().getBytes(StandardCharsets.UTF_8);
-//            }
-//
-//            @NonNull
-//            @Override
-//            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-//                String jsonString = "";
-//                try {
-//                    jsonString = new String(response.data, HttpHeaderParser.parseCharset(response.headers));
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
-//                return Response.success(jsonString, HttpHeaderParser.parseCacheHeaders(response));
-//            }
-
-            //This is for Headers If You Needed
-            @Override
-            public Map<String, String> getHeaders() {
-                HashMap<String, String> headers = new HashMap<>();
-                headers.put("Authorization", "Bearer " + authSharedPreference.getString(AuthStaticElements.SIGN_IN_KEY, ""));
-                return headers;
-            }
-        });
 
     }
-
-
-    //}
 
 
     private void loadBookingRequest() {
@@ -665,14 +463,14 @@ public class MainActivity extends AppCompatActivity
             String reqLog = localMemory.getString(AppConstants.BOOKING_REQUEST_LOG);
             Log.i(TAG, "loadBookingRequestCURR: " + reqLog);
             if (Objects.equals(reqLog, "")) {
-                bookingEmpty.setVisibility(View.GONE);
+                bookingEmpty.setVisibility(GONE);
                 Log.e(TAG, "Json object is null: ");
             } else {
                 JSONArray Jarray = new JSONArray(reqLog);
                 Log.e(TAG, "Json object is not null: ");
                 rideList.setAdapter(new RequestAdapter(
                         MainActivity.this, Jarray));
-                bookingEmpty.setVisibility(View.GONE);
+                bookingEmpty.setVisibility(GONE);
 
             }
         } catch (IllegalArgumentException | NullPointerException | JSONException e) {
