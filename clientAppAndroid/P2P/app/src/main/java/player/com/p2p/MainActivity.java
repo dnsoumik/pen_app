@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
     ListView wifiDeviceList;
     private static final int READ_REQUEST_CODE = 42;
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
+    public static final String FILE_TRANSFER_REFERENCE_ID = "xxxxxxxxqwerty";
 
     /**
      * Following two variables are important as they will contain the FilePath of the in queue
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
     Server server;
     Client client;
-    SendReceive sendReceive;
+//    SendReceive sendReceive;
 
     String message;
 
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        Log.e("SOCKET MESSAGE", "sending message" + message);
+                        Log.e("SOCKET MESSAGE", "sending message " + message);
                         if(MASTER_ROLE == 1){
                             /**
                              * No need to send a message to any client as the responses
@@ -229,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
                     fileUploadInfoRequest.put("file_name", fileInfo.get("DisplayName"));
                     fileUploadInfoRequest.put("extension", "");
                     fileUploadInfoRequest.put("mime_type", mimeType);
+                    fileUploadInfoRequest.put("reference_id", FILE_TRANSFER_REFERENCE_ID);
 
                     masterClient.send(fileUploadInfoRequest.toString());
                 } catch (JSONException e) {
@@ -242,23 +244,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    Handler handler = new Handler(new Handler.Callback() {
-        @Override
-        public boolean handleMessage(Message msg) {
-            String responseMessage = (String) msg.obj;
-            Log.e("RESONSE MSG", responseMessage);
-            switch(msg.what){
-                case MESSAGE_READ:
-                    byte[] readBuffer = (byte[]) msg.obj;
-                    String tempMsg = new String(readBuffer, 0, msg.arg1);
-                    Log.d("SOCKET RESPONSE", tempMsg);
-                    Toast.makeText(getApplicationContext(), "Message: " + tempMsg, Toast.LENGTH_SHORT).show();
-                    break;
-            }
-
-            return true;
-        }
-    });
+//    Handler handler = new Handler(new Handler.Callback() {
+//        @Override
+//        public boolean handleMessage(Message msg) {
+//            String responseMessage = (String) msg.obj;
+//            Log.e("RESONSE MSG", responseMessage);
+//            switch(msg.what){
+//                case MESSAGE_READ:
+//                    byte[] readBuffer = (byte[]) msg.obj;
+//                    String tempMsg = new String(readBuffer, 0, msg.arg1);
+//                    Log.d("SOCKET RESPONSE", tempMsg);
+//                    Toast.makeText(getApplicationContext(), "Message: " + tempMsg, Toast.LENGTH_SHORT).show();
+//                    break;
+//            }
+//
+//            return true;
+//        }
+//    });
 
     WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
         @Override
@@ -364,55 +366,55 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class SendReceive extends Thread {
-        Socket socket;
-        InputStream inputStream;
-        OutputStream outputStream;
-
-        @Override
-        public void run() {
-            byte[] buffer = new byte[1024];
-            int bytes;
-
-            while(socket != null){
-                try {
-                    bytes = inputStream.read(buffer);
-                    if(bytes > 0){
-                        Log.d("SOCKET RESPONSE", "Response received");
-                        //handler.obtainMessage(MESSAGE_READ, bytes, -1, buffer);
-                        Message msg = new Message();
-                        String message = new String(ByteStreams.toByteArray(inputStream));
-                        System.out.println("Response text is "+ message);
-                        msg.obj = message;
-                        msg.what = MESSAGE_READ;
-                        Log.d("SOCKET MESSAGE", message);
-                        handler.handleMessage(msg);
-
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        public void write(final byte[] bytes){
-            try {
-                outputStream.write(bytes);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        public SendReceive(Socket skt){
-            this.socket = skt;
-            try{
-                this.inputStream = this.socket.getInputStream();
-                this.outputStream = this.socket.getOutputStream();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        }
-    }
+//    public class SendReceive extends Thread {
+//        Socket socket;
+//        InputStream inputStream;
+//        OutputStream outputStream;
+//
+//        @Override
+//        public void run() {
+//            byte[] buffer = new byte[1024];
+//            int bytes;
+//
+//            while(socket != null){
+//                try {
+//                    bytes = inputStream.read(buffer);
+//                    if(bytes > 0){
+//                        Log.d("SOCKET RESPONSE", "Response received");
+//                        //handler.obtainMessage(MESSAGE_READ, bytes, -1, buffer);
+//                        Message msg = new Message();
+//                        String message = new String(ByteStreams.toByteArray(inputStream));
+//                        System.out.println("Response text is "+ message);
+//                        msg.obj = message;
+//                        msg.what = MESSAGE_READ;
+//                        Log.d("SOCKET MESSAGE", message);
+//                        handler.handleMessage(msg);
+//
+//                    }
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//
+//        public void write(final byte[] bytes){
+//            try {
+//                outputStream.write(bytes);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//
+//        public SendReceive(Socket skt){
+//            this.socket = skt;
+//            try{
+//                this.inputStream = this.socket.getInputStream();
+//                this.outputStream = this.socket.getOutputStream();
+//            }catch (IOException e){
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     public class Client extends Thread {
         WebSocketClient socket;
@@ -439,29 +441,35 @@ public class MainActivity extends AppCompatActivity {
                             Log.e(CLIENT_SOCKET_TAG, " Message: " + message);
                             try {
                                 JSONObject response = new JSONObject(message);
-                                switch (response.getString("response_code")){
-                                    //TODO: Handle test cases here
+                                switch (response.getInt("response_code")){
+                                    case SocketServer.FILE_INFO_RESPONSE:
+                                        File ourFile = new File(UploadQueueFilePath);
+                                        byte[] bytesArray = new byte[(int) ourFile.length()];
+                                        FileInputStream fis = null;
+                                        try {
+                                            fis = new FileInputStream(ourFile);
+                                            fis.read(bytesArray); //read file into bytes[]
+                                            fis.close();
+
+                                            // Send the file through socket
+
+                                            masterClient.send(bytesArray);
+
+                                        } catch (FileNotFoundException e) {
+                                            e.printStackTrace();
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        break;
+                                    default:
+                                        break;
+
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-//                            File ourFile = new File(realPath);
-//                            byte[] bytesArray = new byte[(int) ourFile.length()];
-//                            FileInputStream fis = null;
-//                            try {
-//                                fis = new FileInputStream(ourFile);
-//                                fis.read(bytesArray); //read file into bytes[]
-//                                fis.close();
-//
-//                                // Send the file through socket
-//
-//                                masterClient.send(bytesArray);
-//
-//                            } catch (FileNotFoundException e) {
-//                                e.printStackTrace();
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
+
                         }
 
                         @Override

@@ -50,8 +50,13 @@ public class SocketServer extends WebSocketServer {
 
         /** Check if the parent directory exist */
         File dir = new File(f.getParent());
-        if (!dir.exists())
+        Log.e("File Creation Process","Parent Folder: " + dir.getPath());
+        if (!dir.exists()){
+            Log.e("File Creation Process", "Creating parent directory");
             dir.mkdirs();
+        }else{
+            Log.e("File Creation Process", "Parent directory already exists");
+        }
     }
 
     @Override
@@ -69,7 +74,7 @@ public class SocketServer extends WebSocketServer {
         Log.e(SOCKET_TAG, " Server Message: " + message);
         try {
             JSONObject instruction = new JSONObject(message);
-            switch(instruction.getInt("todo")){
+            switch(instruction.getInt("instruction")){
                 case NEW_FILE_INFO:
                     /**
                      * New file info JSON request format
@@ -143,6 +148,9 @@ public class SocketServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, ByteBuffer message) {
         //super.onMessage(conn, message);
+
+        Log.e("SOCKET-RESPONSE", "Receving bytes: " + Integer.toString(message.capacity()));
+
         byte[] bytes = new byte[message.capacity()];
 
         final File f = new File(Environment.getExternalStorageDirectory() + "/"
@@ -174,6 +182,8 @@ public class SocketServer extends WebSocketServer {
         //this.extension = null;
         this.fileName = null;
         this.reference_number = null;
+
+        Log.e("SOCKET-RESPONSE", "Upload is complete on server side");
 
         /** Send acknowledgement to Client */
         conn.send(response.toString());
